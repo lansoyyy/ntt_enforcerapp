@@ -75,7 +75,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                 ),
                 widget.isRequred!
                     ? const TextSpan(
-                        text: ' ',
+                        text: '*',
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Bold',
