@@ -1,3 +1,4 @@
+import 'package:enforcer_app/utlis/colors.dart';
 import 'package:flutter/material.dart';
 
 Future<DateTime?> datePickerWidget(
@@ -10,10 +11,9 @@ Future<DateTime?> datePickerWidget(
     builder: (BuildContext context, Widget? child) {
       return Theme(
         data: ThemeData.light().copyWith(
-          primaryColor: Colors.orange, // Header background color
+          primaryColor: primary, // Header background color
 
-          colorScheme: const ColorScheme.light(
-              primary: Colors.orange), // Selection color
+          colorScheme: ColorScheme.light(primary: primary), // Selection color
           buttonTheme: const ButtonThemeData(
             textTheme: ButtonTextTheme.primary, // Text color
           ),

@@ -60,9 +60,9 @@ class _NotifScreenState extends State<NotifScreen> {
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(15),
-                leading: const Icon(
+                leading: Icon(
                   Icons.notifications,
-                  color: Colors.orange,
+                  color: primary,
                   size: 40,
                 ),
                 title: Text(
