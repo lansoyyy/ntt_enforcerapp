@@ -1,3 +1,4 @@
+import 'package:enforcer_app/utlis/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 
@@ -8,7 +9,7 @@ class ButtonWidget extends StatelessWidget {
   final double? fontSize;
   final double? height;
   final double? radius;
-  final Color? color;
+  final Color color;
   final Color? textColor;
 
   const ButtonWidget(
@@ -20,7 +21,7 @@ class ButtonWidget extends StatelessWidget {
       this.width = 275,
       this.fontSize = 18,
       this.height = 50,
-      this.color = Colors.orange});
+      this.color = primary});
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
