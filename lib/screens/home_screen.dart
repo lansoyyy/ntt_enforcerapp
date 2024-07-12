@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Card(
               color: Colors.white,
-              elevation: 3,
+              elevation: 2,
               child: SizedBox(
                 width: double.infinity,
                 height: 150,
