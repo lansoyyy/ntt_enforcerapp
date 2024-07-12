@@ -28,10 +28,10 @@ class TextFieldWidget extends StatefulWidget {
     this.width = double.infinity,
     this.height = 40,
     this.maxLine = 1,
-    this.hintColor = Colors.white,
+    this.hintColor = Colors.black,
     this.borderColor = Colors.transparent,
     this.showEye = false,
-    this.color = Colors.white,
+    this.color = Colors.black,
     this.radius = 5,
     this.textCapitalization = TextCapitalization.sentences,
     this.inputType = TextInputType.text,
@@ -72,7 +72,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                         : const Icon(Icons.visibility_off))
                 : const SizedBox(),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Colors.grey[100],
             hintText: widget.hint,
             border: InputBorder.none,
             disabledBorder: OutlineInputBorder(

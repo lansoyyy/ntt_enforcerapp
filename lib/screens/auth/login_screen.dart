@@ -24,70 +24,77 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo Placeholder
-                const CircleAvatar(
-                  radius: 100,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage(
-                    'assets/images/logo.png',
-                  ), // Replace with your logo asset
-                ),
-
-                const Text(
-                  'Welcome to Traffic Violation Ticketing System',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo Placeholder
+                  const CircleAvatar(
+                    radius: 100,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: AssetImage(
+                      'assets/images/logo.png',
+                    ), // Replace with your logo asset
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextFieldWidget(
-                  label: 'Username',
-                  controller: username,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a username';
-                    }
 
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFieldWidget(
-                  label: 'Password',
-                  isObscure: true,
-                  controller: password,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters long';
-                    }
+                  const Text(
+                    'Welcome to Traffic Violation Ticketing System',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextFieldWidget(
+                    hint: 'Enter username',
+                    borderColor: Colors.grey,
+                    label: 'Username',
+                    controller: username,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a username';
+                      }
 
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                ButtonWidget(
-                  label: 'Login',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
-                        (route) {
-                          return false;
-                        },
-                      );
-                    }
-                  },
-                ),
-              ],
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFieldWidget(
+                    hint: 'Enter password',
+                    showEye: true,
+                    borderColor: Colors.grey,
+                    label: 'Password',
+                    isObscure: true,
+                    controller: password,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      if (value.length < 8) {
+                        return 'Password must be at least 8 characters long';
+                      }
+
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  ButtonWidget(
+                    label: 'Login',
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()),
+                          (route) {
+                            return false;
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
