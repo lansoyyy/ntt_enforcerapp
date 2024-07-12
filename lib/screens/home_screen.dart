@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 PopupMenuItem(
                   onTap: () {
-                    logout(context, const LoginPage());
+                    logout(context, const LoginScreen());
                   },
                   child: Row(
                     children: [
