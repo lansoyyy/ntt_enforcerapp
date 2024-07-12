@@ -1,7 +1,7 @@
 import 'package:enforcer_app/screens/add_ticket_screen.dart';
 import 'package:enforcer_app/screens/auth/login_screen.dart';
 import 'package:enforcer_app/screens/notif_screen.dart';
-import 'package:enforcer_app/utlis/colors.dart';
+import 'package:enforcer_app/utils/colors.dart';
 import 'package:enforcer_app/widgets/date_picker_widget.dart';
 import 'package:enforcer_app/widgets/logout_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utlis/colors.dart';
+import '../utils/colors.dart';
 
 class AddTicketScreen extends StatelessWidget {
   const AddTicketScreen({super.key});

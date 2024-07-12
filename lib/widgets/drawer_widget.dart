@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 
-import '../utlis/colors.dart';
+import '../utils/colors.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({super.key});
@@ -45,7 +45,7 @@ class DrawerWidget extends StatelessWidget {
                     onPressed: () {
                       Scaffold.of(context).closeDrawer();
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.menu,
                       color: primary,
                       size: 32,

@@ -1,4 +1,4 @@
-import 'package:enforcer_app/utlis/colors.dart';
+import 'package:enforcer_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 

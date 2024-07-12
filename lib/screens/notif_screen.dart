@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utlis/colors.dart';
+import '../utils/colors.dart';
 import '../widgets/text_widget.dart';
 
 class NotifScreen extends StatefulWidget {
@@ -60,7 +60,7 @@ class _NotifScreenState extends State<NotifScreen> {
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(15),
-                leading: Icon(
+                leading: const Icon(
                   Icons.notifications,
                   color: primary,
                   size: 40,
