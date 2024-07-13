@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   TextFieldWidget(
+                    hasValidator: false,
                     hint: 'Enter username',
                     borderColor: Colors.grey,
                     label: 'Username',
@@ -61,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   TextFieldWidget(
+                    hasValidator: false,
                     hint: 'Enter password',
                     showEye: true,
                     borderColor: Colors.grey,

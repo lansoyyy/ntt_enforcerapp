@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(
-              height: 10,
+              height: 5,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,9 +205,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
-                height: 380,
+                height: 345,
                 child: SingleChildScrollView(
                   child: DataTable(
+                      columnSpacing: 67.5,
                       headingRowColor: WidgetStateProperty.resolveWith<Color?>(
                         (Set<WidgetState> states) {
                           return Colors.white; // Row color
