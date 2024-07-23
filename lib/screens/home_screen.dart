@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime? selectedDate;
+  DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,13 +53,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.notifications,
+                        Icons.info_outline,
                       ),
                       const SizedBox(
                         width: 20,
                       ),
                       TextWidget(
-                        text: 'Notifications',
+                        text: 'Announcements',
                         fontSize: 14,
                       ),
                     ],
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () async {
                     final DateTime? pickedDate = await datePickerWidget(
                       context,
-                      selectedDate!,
+                      selectedDate,
                     );
 
                     if (pickedDate != null && pickedDate != selectedDate) {
@@ -190,8 +190,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         selectedDate = pickedDate;
                       });
                     }
-
-                    print(selectedDate);
                   },
                   icon: const Icon(
                     Icons.calendar_month,
@@ -218,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       columns: [
                         DataColumn(
                           label: TextWidget(
-                            text: 'ID',
+                            text: 'Ticket No.',
                             fontSize: 14,
                             fontFamily: 'Bold',
                           ),

@@ -42,7 +42,7 @@ class _NotifScreenState extends State<NotifScreen> {
         foregroundColor: Colors.white,
         backgroundColor: primary,
         title: TextWidget(
-          text: 'Notifications',
+          text: 'Announcements',
           fontSize: 18,
           color: Colors.white,
         ),
@@ -61,7 +61,7 @@ class _NotifScreenState extends State<NotifScreen> {
               child: ListTile(
                 contentPadding: const EdgeInsets.all(15),
                 leading: const Icon(
-                  Icons.notifications,
+                  Icons.info_outline,
                   color: primary,
                   size: 40,
                 ),

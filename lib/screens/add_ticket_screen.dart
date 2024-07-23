@@ -16,7 +16,9 @@ class AddTicketScreen extends StatefulWidget {
 }
 
 class _AddTicketScreenState extends State<AddTicketScreen> {
-  final name = TextEditingController();
+  final fname = TextEditingController();
+  final lname = TextEditingController();
+
   final address = TextEditingController();
   final license = TextEditingController();
   final expiry = TextEditingController();
@@ -30,11 +32,11 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   final owner = TextEditingController();
   final owneraddress = TextEditingController();
   final maker = TextEditingController();
-  final model = TextEditingController();
+  final vehicletype = TextEditingController();
   final color = TextEditingController();
   final number = TextEditingController();
 
-  String _selectedOption = 'Prof';
+  final String _selectedOption = 'Prof';
 
   Map<String, bool> checkedValues = {};
 
@@ -42,10 +44,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  final searchController = TextEditingController();
+  String nameSearched = '';
+
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+
     super.initState();
     for (var violation in violations) {
       checkedValues[violation.code] = false;
@@ -71,7 +76,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
               children: [
                 const Center(
                   child: Text(
-                    'VIOLATOR INFORMATION',
+                    'DRIVER INFORMATION',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 18,
@@ -108,124 +113,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 ),
                 TextFieldWidget(
                   width: double.infinity,
-                  controller: name,
-                  label: 'Fullname',
+                  controller: fname,
+                  label: 'Firstname',
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextFieldWidget(
-                      width: 175,
-                      controller: expiry,
-                      label: 'Expiry',
-                    ),
-                    TextFieldWidget(
-                      width: 175,
-                      controller: gender,
-                      label: 'Gender',
-                    ),
-                  ],
-                ),
-                TextWidget(
-                    text: 'License Type', fontSize: 12, color: Colors.black),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 125,
-                      child: RadioListTile<String>(
-                        activeColor: primary,
-                        title: const Text(
-                          'Prof',
-                          style: TextStyle(
-                            fontFamily: 'Medium',
-                            fontSize: 14,
-                          ),
-                        ),
-                        value: 'Prof',
-                        groupValue: _selectedOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedOption = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 125,
-                      child: RadioListTile<String>(
-                        activeColor: primary,
-                        title: const Text(
-                          'Non Prof',
-                          style: TextStyle(
-                            fontFamily: 'Medium',
-                            fontSize: 14,
-                          ),
-                        ),
-                        value: 'Non Prof',
-                        groupValue: _selectedOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedOption = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 115,
-                      child: RadioListTile<String>(
-                        activeColor: primary,
-                        title: const Text(
-                          'SP',
-                          style: TextStyle(
-                            fontFamily: 'Medium',
-                            fontSize: 14,
-                          ),
-                        ),
-                        value: 'SP',
-                        groupValue: _selectedOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedOption = value!;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextFieldWidget(
-                      width: 175,
-                      controller: bday,
-                      label: 'Birthday',
-                    ),
-                    TextFieldWidget(
-                      width: 175,
-                      controller: nationality,
-                      label: 'Nationality',
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextFieldWidget(
-                      inputType: TextInputType.number,
-                      width: 175,
-                      controller: height,
-                      label: 'Height (cm)',
-                    ),
-                    TextFieldWidget(
-                      inputType: TextInputType.number,
-                      width: 175,
-                      controller: weight,
-                      label: 'Weight (kg)',
-                    ),
-                  ],
+                TextFieldWidget(
+                  width: double.infinity,
+                  controller: lname,
+                  label: 'Lastname',
                 ),
                 const SizedBox(
                   height: 10,
@@ -248,43 +142,38 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFieldWidget(
-                  width: 325,
-                  controller: plateno,
-                  label: 'Plate No.',
-                ),
-                TextFieldWidget(
-                  width: 325,
-                  controller: owner,
-                  label: 'Owner',
-                ),
-                TextFieldWidget(
-                  width: 325,
-                  controller: owneraddress,
-                  label: 'Owner Address',
-                ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextFieldWidget(
-                      width: 175,
-                      controller: maker,
-                      label: 'Maker',
+                    SizedBox(
+                      width: 320,
+                      child: TextFieldWidget(
+                        width: double.infinity,
+                        controller: plateno,
+                        label: 'Plate No.',
+                      ),
                     ),
-                    TextFieldWidget(
-                      width: 175,
-                      controller: color,
-                      label: 'Color',
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.verified,
+                      ),
                     ),
                   ],
                 ),
                 TextFieldWidget(
-                  width: 325,
-                  controller: model,
-                  label: 'Model',
+                  width: double.infinity,
+                  controller: vehicletype,
+                  label: 'Type of Vehicle',
+                ),
+                TextFieldWidget(
+                  width: double.infinity,
+                  controller: owner,
+                  label: 'Name of Owner',
+                ),
+                TextFieldWidget(
+                  width: double.infinity,
+                  controller: owneraddress,
+                  label: 'Address of Owner',
                 ),
                 const SizedBox(
                   height: 20,
@@ -294,21 +183,23 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     width: double.infinity,
                     label: hasSelected ? 'Save Ticket' : 'Continue',
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (hasSelected) {
-                          showToast('Ticket saved succesfully!');
+                      // if (_formKey.currentState!.validate()) {
+                      //   if (hasSelected) {
+                      //     showToast('Ticket saved succesfully!');
 
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => const HomeScreen()),
-                            (route) {
-                              return false;
-                            },
-                          );
-                        } else {
-                          showViolations();
-                        }
-                      }
+                      //     Navigator.of(context).pushAndRemoveUntil(
+                      //       MaterialPageRoute(
+                      //           builder: (context) => const HomeScreen()),
+                      //       (route) {
+                      //         return false;
+                      //       },
+                      //     );
+                      //   } else {
+                      //     showViolations();
+                      //   }
+                      // }
+
+                      showViolations();
                     },
                   ),
                 ),
@@ -330,119 +221,261 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         return SizedBox(
             height: 500,
             width: double.infinity,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'TRAFFIC VIOLATION',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Bold',
+            child: StatefulBuilder(builder: (context, setState) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'TRAFFIC VIOLATION',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Bold',
+                          ),
+                        ),
+                        const Expanded(
+                          child: SizedBox(),
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              showViolationDetailsDialog();
+                            },
+                            icon: const Icon(
+                              Icons.save,
+                            )),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                            )),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Container(
+                      height: 40,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(100)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: TextFormField(
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Regular',
+                              fontSize: 14),
+                          onChanged: (value) {
+                            setState(() {
+                              nameSearched = value;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                              ),
+                              hintText: 'Search Violation',
+                              hintStyle: TextStyle(
+                                  fontFamily: 'Regular', fontSize: 14),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.grey,
+                              )),
+                          controller: searchController,
                         ),
                       ),
-                      const Expanded(
-                        child: SizedBox(),
+                    ),
+                  ),
+                  SizedBox(
+                      height: 225,
+                      width: 375,
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) {
+                          return Divider(
+                            color: Colors.grey[200],
+                            thickness: 2,
+                          );
+                        },
+                        itemCount: violations.length,
+                        itemBuilder: (context, index) {
+                          var violation = violations[index];
+                          return SizedBox(
+                            width: 300,
+                            height: 85,
+                            child: CheckboxListTile(
+                              title: Text(
+                                '${violation.code} - ${violation.description}',
+                                style: const TextStyle(
+                                  fontFamily: 'Regular',
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'First Offense: ${violation.fines.values.elementAt(0)}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Regular',
+                                      color: Colors.green,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Second Offense: ${violation.fines.values.elementAt(1)}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Regular',
+                                      color: Colors.green,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Third Offense: ${violation.fines.values.elementAt(2)}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Regular',
+                                      color: Colors.green,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              value: checkedValues[violation.code],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  checkedValues[violation.code] = value!;
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      )),
+                  const SizedBox(height: 10),
+                ],
+              );
+            }));
+      },
+    );
+  }
+
+  showViolationDetailsDialog() {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 500,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < 5; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextWidget(
+                        text: 'No Helmet',
+                        fontSize: 14,
+                        fontFamily: 'Bold',
                       ),
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              hasSelected = true;
-                            });
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(
-                            Icons.save,
-                          )),
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(
-                            Icons.close,
-                          )),
+                      TextWidget(
+                        text: '3rd offense',
+                        fontSize: 12,
+                        fontFamily: 'Medium',
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                text: 'P 2000.00',
+                                fontSize: 12,
+                                fontFamily: 'Medium',
+                              ),
+                              TextWidget(
+                                text: 'REV OF DL',
+                                fontSize: 12,
+                                fontFamily: 'Medium',
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.delete_outline_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                      text: 'Total',
+                      fontSize: 14,
+                      fontFamily: 'Bold',
+                    ),
+                    TextWidget(
+                      text: 'P 10,000.00',
+                      fontSize: 14,
+                      fontFamily: 'Bold',
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  height: 10,
+                const Expanded(child: SizedBox()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    MaterialButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text(
+                        'Close',
+                        style: TextStyle(
+                            fontFamily: 'QRegular',
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    MaterialButton(
+                      onPressed: () async {
+                        setState(() {
+                          hasSelected = true;
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                            fontFamily: 'QRegular',
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                    height: 300,
-                    width: 375,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return Divider(
-                          color: Colors.grey[200],
-                          thickness: 2,
-                        );
-                      },
-                      itemCount: violations.length,
-                      itemBuilder: (context, index) {
-                        var violation = violations[index];
-                        return SizedBox(
-                          width: 300,
-                          height: 85,
-                          child: CheckboxListTile(
-                            title: Text(
-                              '${violation.code} - ${violation.description}',
-                              style: const TextStyle(
-                                fontFamily: 'Regular',
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'First Offense: ${violation.fines.values.elementAt(0)}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Regular',
-                                    color: Colors.green,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                                Text(
-                                  'Second Offense: ${violation.fines.values.elementAt(1)}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Regular',
-                                    color: Colors.green,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                                Text(
-                                  'Third Offense: ${violation.fines.values.elementAt(2)}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Regular',
-                                    color: Colors.green,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            value: checkedValues[violation.code],
-                            onChanged: (bool? value) {
-                              setState(() {
-                                checkedValues[violation.code] = value!;
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    )),
-                const SizedBox(height: 10),
               ],
-            ));
+            ),
+          ),
+        );
       },
     );
   }
