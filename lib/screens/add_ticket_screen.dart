@@ -83,6 +83,24 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 const SizedBox(
                   height: 10,
                 ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 320,
+                      child: TextFieldWidget(
+                        width: double.infinity,
+                        controller: license,
+                        label: 'License No.',
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.verified,
+                      ),
+                    ),
+                  ],
+                ),
                 TextFieldWidget(
                   width: double.infinity,
                   controller: address,
@@ -92,11 +110,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                   width: double.infinity,
                   controller: name,
                   label: 'Fullname',
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: license,
-                  label: 'License No.',
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,5 +1,7 @@
 import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
+import 'package:enforcer_app/widgets/forgot_password_widget.dart';
+import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final username = TextEditingController();
+  final email = TextEditingController();
   final password = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -48,37 +50,53 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
                   TextFieldWidget(
                     hasValidator: false,
-                    hint: 'Enter username',
+                    hint: 'Enter email',
                     borderColor: Colors.grey,
-                    label: 'Username',
-                    controller: username,
+                    label: 'Email',
+                    controller: email,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a username';
+                        return 'Please enter an email';
                       }
 
                       return null;
                     },
                   ),
                   const SizedBox(height: 10),
-                  TextFieldWidget(
-                    hasValidator: false,
-                    hint: 'Enter password',
-                    showEye: true,
-                    borderColor: Colors.grey,
-                    label: 'Password',
-                    isObscure: true,
-                    controller: password,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      }
-                      if (value.length < 8) {
-                        return 'Password must be at least 8 characters long';
-                      }
+                  Column(
+                    children: [
+                      TextFieldWidget(
+                        hasValidator: false,
+                        hint: 'Enter password',
+                        showEye: true,
+                        borderColor: Colors.grey,
+                        label: 'Password',
+                        isObscure: true,
+                        controller: password,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (value.length < 8) {
+                            return 'Password must be at least 8 characters long';
+                          }
 
-                      return null;
-                    },
+                          return null;
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: TextButton(
+                          onPressed: () {
+                            forgotpassword(context);
+                          },
+                          child: TextWidget(
+                            text: 'Forgot password?',
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 30),
                   ButtonWidget(
