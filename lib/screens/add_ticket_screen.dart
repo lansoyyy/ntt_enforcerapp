@@ -91,7 +91,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 Row(
                   children: [
                     SizedBox(
-                      width: 320,
+                      width: 270,
                       child: TextFieldWidget(
                         width: double.infinity,
                         controller: license,
@@ -145,7 +145,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 Row(
                   children: [
                     SizedBox(
-                      width: 320,
+                      width: 270,
                       child: TextFieldWidget(
                         width: double.infinity,
                         controller: plateno,
