@@ -21,22 +21,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   final address = TextEditingController();
   final license = TextEditingController();
-  final expiry = TextEditingController();
-  final bday = TextEditingController();
-  final nationality = TextEditingController();
-  final height = TextEditingController();
-  final weight = TextEditingController();
-  final gender = TextEditingController();
 
   final plateno = TextEditingController();
   final owner = TextEditingController();
   final owneraddress = TextEditingController();
-  final maker = TextEditingController();
-  final vehicletype = TextEditingController();
-  final color = TextEditingController();
-  final number = TextEditingController();
 
-  final String _selectedOption = 'Prof';
+  final vehicletype = TextEditingController();
 
   Map<String, bool> checkedValues = {};
 

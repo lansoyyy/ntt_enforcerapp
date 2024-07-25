@@ -2,9 +2,11 @@ import 'package:enforcer_app/screens/add_ticket_screen.dart';
 import 'package:enforcer_app/screens/auth/login_screen.dart';
 import 'package:enforcer_app/screens/notif_screen.dart';
 import 'package:enforcer_app/utils/colors.dart';
+import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/date_picker_widget.dart';
 import 'package:enforcer_app/widgets/logout_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
+import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +18,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
+
+  final fname = TextEditingController();
+  final lname = TextEditingController();
+
+  final address = TextEditingController();
+  final license = TextEditingController();
+
+  final plateno = TextEditingController();
+  final owner = TextEditingController();
+  final owneraddress = TextEditingController();
+
+  final vehicletype = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,183 +113,317 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 2,
               child: SizedBox(
                 width: double.infinity,
-                height: 150,
+                height: 550,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Column(
                     children: [
-                      const CircleAvatar(
-                        minRadius: 50,
-                        maxRadius: 50,
-                        backgroundImage: AssetImage(
-                          'assets/images/profile.png',
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      VerticalDivider(
-                        color: Colors.grey[200],
-                        thickness: 2,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          TextWidget(
-                            text: 'Name',
-                            fontSize: 11,
-                            color: Colors.grey,
+                          const CircleAvatar(
+                            minRadius: 50,
+                            maxRadius: 50,
+                            backgroundImage: AssetImage(
+                              'assets/images/profile.png',
+                            ),
                           ),
-                          TextWidget(
-                            text: 'Lance O. Olana',
-                            fontSize: 15,
-                            color: Colors.black,
-                            fontFamily: 'Bold',
+                          const SizedBox(
+                            width: 10,
                           ),
-                          TextWidget(
-                            text: 'Station',
-                            fontSize: 10,
-                            color: Colors.grey,
+                          VerticalDivider(
+                            color: Colors.grey[200],
+                            thickness: 2,
                           ),
-                          TextWidget(
-                            text: 'Cagayan De Oro',
-                            fontSize: 12,
-                            color: Colors.black,
-                            fontFamily: 'Bold',
+                          const SizedBox(
+                            width: 10,
                           ),
-                          TextWidget(
-                            text: 'Position',
-                            fontSize: 10,
-                            color: Colors.grey,
-                          ),
-                          TextWidget(
-                            text: 'Team Leader',
-                            fontSize: 12,
-                            color: Colors.black,
-                            fontFamily: 'Bold',
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextWidget(
+                                text: 'Name',
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                              TextWidget(
+                                text: 'Lance O. Olana',
+                                fontSize: 15,
+                                color: Colors.black,
+                                fontFamily: 'Bold',
+                              ),
+                              TextWidget(
+                                text: 'Station',
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                              TextWidget(
+                                text: 'Cagayan De Oro',
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontFamily: 'Bold',
+                              ),
+                              TextWidget(
+                                text: 'Position',
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                              TextWidget(
+                                text: 'Team Leader',
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontFamily: 'Bold',
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextWidget(
+                            text: 'History',
+                            fontSize: 18,
+                            fontFamily: 'Bold',
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              final DateTime? pickedDate =
+                                  await datePickerWidget(
+                                context,
+                                selectedDate,
+                              );
+
+                              if (pickedDate != null &&
+                                  pickedDate != selectedDate) {
+                                setState(() {
+                                  selectedDate = pickedDate;
+                                });
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.calendar_month,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          height: 360,
+                          child: SingleChildScrollView(
+                            child: DataTable(
+                                columnSpacing: 67.5,
+                                headingRowColor:
+                                    WidgetStateProperty.resolveWith<Color?>(
+                                  (Set<WidgetState> states) {
+                                    return Colors.white; // Row color
+                                  },
+                                ),
+                                border: TableBorder.all(color: Colors.black),
+                                columns: [
+                                  DataColumn(
+                                    label: TextWidget(
+                                      text: 'Ticket No.',
+                                      fontSize: 14,
+                                      fontFamily: 'Bold',
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: TextWidget(
+                                      text: 'Name',
+                                      fontSize: 14,
+                                      fontFamily: 'Bold',
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: TextWidget(
+                                      text: 'Date and Time',
+                                      fontSize: 14,
+                                      fontFamily: 'Bold',
+                                    ),
+                                  ),
+                                ],
+                                rows: [
+                                  for (int i = 0; i < 50; i++)
+                                    DataRow(
+                                        color: WidgetStateProperty.resolveWith<
+                                            Color?>(
+                                          (Set<WidgetState> states) {
+                                            return i % 2 != 0
+                                                ? Colors.white
+                                                : Colors.grey[100]; // Row color
+                                          },
+                                        ),
+                                        cells: [
+                                          DataCell(
+                                            GestureDetector(
+                                              onTap: () {
+                                                showViolationDetails();
+                                              },
+                                              child: TextWidget(
+                                                text: '${i + 1}',
+                                                fontSize: 12,
+                                                fontFamily: 'Bold',
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            GestureDetector(
+                                              onTap: () {
+                                                showViolationDetails();
+                                              },
+                                              child: TextWidget(
+                                                align: TextAlign.start,
+                                                text: 'Lance Olana',
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                          DataCell(
+                                            GestureDetector(
+                                              onTap: () {
+                                                showViolationDetails();
+                                              },
+                                              child: TextWidget(
+                                                align: TextAlign.start,
+                                                text: 'January 01, 2001',
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ])
+                                ]),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextWidget(
-                  text: 'History',
-                  fontSize: 18,
-                  fontFamily: 'Bold',
-                ),
-                IconButton(
-                  onPressed: () async {
-                    final DateTime? pickedDate = await datePickerWidget(
-                      context,
-                      selectedDate,
-                    );
-
-                    if (pickedDate != null && pickedDate != selectedDate) {
-                      setState(() {
-                        selectedDate = pickedDate;
-                      });
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.calendar_month,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                height: 345,
-                child: SingleChildScrollView(
-                  child: DataTable(
-                      columnSpacing: 67.5,
-                      headingRowColor: WidgetStateProperty.resolveWith<Color?>(
-                        (Set<WidgetState> states) {
-                          return Colors.white; // Row color
-                        },
-                      ),
-                      border: TableBorder.all(color: Colors.black),
-                      columns: [
-                        DataColumn(
-                          label: TextWidget(
-                            text: 'Ticket No.',
-                            fontSize: 14,
-                            fontFamily: 'Bold',
-                          ),
-                        ),
-                        DataColumn(
-                          label: TextWidget(
-                            text: 'Name',
-                            fontSize: 14,
-                            fontFamily: 'Bold',
-                          ),
-                        ),
-                        DataColumn(
-                          label: TextWidget(
-                            text: 'Date and Time',
-                            fontSize: 14,
-                            fontFamily: 'Bold',
-                          ),
-                        ),
-                      ],
-                      rows: [
-                        for (int i = 0; i < 50; i++)
-                          DataRow(
-                              color: WidgetStateProperty.resolveWith<Color?>(
-                                (Set<WidgetState> states) {
-                                  return i % 2 != 0
-                                      ? Colors.white
-                                      : Colors.grey[100]; // Row color
-                                },
-                              ),
-                              cells: [
-                                DataCell(
-                                  TextWidget(
-                                    text: '${i + 1}',
-                                    fontSize: 12,
-                                    fontFamily: 'Bold',
-                                  ),
-                                ),
-                                DataCell(
-                                  TextWidget(
-                                    align: TextAlign.start,
-                                    text: 'Lance Olana',
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                DataCell(
-                                  TextWidget(
-                                    align: TextAlign.start,
-                                    text: 'January 01, 2001',
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ])
-                      ]),
-                ),
-              ),
-            )
           ],
         ),
       ),
+    );
+  }
+
+  showViolationDetails() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      'DRIVER INFORMATION',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Bold'),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: license,
+                    label: 'License No.',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: address,
+                    label: 'Address',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: fname,
+                    label: 'Firstname',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: lname,
+                    label: 'Lastname',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Divider(
+                    color: Colors.grey[200],
+                    thickness: 2,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Center(
+                    child: Text(
+                      'VEHICLE INFORMATION',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red,
+                        fontFamily: 'Bold',
+                      ),
+                    ),
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: plateno,
+                    label: 'Plate No.',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: vehicletype,
+                    label: 'Type of Vehicle',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: owner,
+                    label: 'Name of Owner',
+                  ),
+                  TextFieldWidget(
+                    width: double.infinity,
+                    controller: owneraddress,
+                    label: 'Address of Owner',
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: ButtonWidget(
+                      width: double.infinity,
+                      label: 'Close',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
