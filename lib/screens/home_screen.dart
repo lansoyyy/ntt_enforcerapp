@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 2,
               child: SizedBox(
                 width: double.infinity,
-                height: 550,
+                height: 605,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Column(
@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          height: 360,
+                          height: 420,
                           child: SingleChildScrollView(
                             child: DataTable(
                                 columnSpacing: 67.5,
