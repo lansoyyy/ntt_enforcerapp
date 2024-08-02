@@ -215,94 +215,72 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(
                         height: 5,
                       ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          height: 420,
-                          child: SingleChildScrollView(
-                            child: DataTable(
-                                columnSpacing: 67.5,
-                                headingRowColor:
-                                    WidgetStateProperty.resolveWith<Color?>(
-                                  (Set<WidgetState> states) {
-                                    return Colors.white; // Row color
-                                  },
-                                ),
-                                border: TableBorder.all(color: Colors.black),
-                                columns: [
-                                  DataColumn(
-                                    label: TextWidget(
-                                      text: 'Ticket No.',
-                                      fontSize: 14,
-                                      fontFamily: 'Bold',
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: TextWidget(
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: 5,
+                          separatorBuilder: (context, index) {
+                            return const Divider();
+                          },
+                          itemBuilder: (context, index) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TextWidget(
                                       text: 'Name',
-                                      fontSize: 14,
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                    ),
+                                    TextWidget(
+                                      text: 'Lance O. Olana',
+                                      fontSize: 15,
+                                      color: Colors.black,
                                       fontFamily: 'Bold',
                                     ),
-                                  ),
-                                  DataColumn(
-                                    label: TextWidget(
+                                    TextWidget(
+                                      text: 'Violation',
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                    TextWidget(
+                                      text: 'No Helmet',
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                      fontFamily: 'Bold',
+                                    ),
+                                    TextWidget(
                                       text: 'Date and Time',
-                                      fontSize: 14,
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                    TextWidget(
+                                      text: 'January 01, 2001',
+                                      fontSize: 12,
+                                      color: Colors.black,
                                       fontFamily: 'Bold',
                                     ),
+                                  ],
+                                ),
+                                const Expanded(child: SizedBox()),
+                                IconButton(
+                                  onPressed: () {
+                                    showViolationDetails();
+                                  },
+                                  icon: const Icon(
+                                    size: 35,
+                                    Icons.visibility,
                                   ),
-                                ],
-                                rows: [
-                                  for (int i = 0; i < 50; i++)
-                                    DataRow(
-                                        color: WidgetStateProperty.resolveWith<
-                                            Color?>(
-                                          (Set<WidgetState> states) {
-                                            return i % 2 != 0
-                                                ? Colors.white
-                                                : Colors.grey[100]; // Row color
-                                          },
-                                        ),
-                                        cells: [
-                                          DataCell(
-                                            GestureDetector(
-                                              onTap: () {
-                                                showViolationDetails();
-                                              },
-                                              child: TextWidget(
-                                                text: '${i + 1}',
-                                                fontSize: 12,
-                                                fontFamily: 'Bold',
-                                              ),
-                                            ),
-                                          ),
-                                          DataCell(
-                                            GestureDetector(
-                                              onTap: () {
-                                                showViolationDetails();
-                                              },
-                                              child: TextWidget(
-                                                align: TextAlign.start,
-                                                text: 'Lance Olana',
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                          DataCell(
-                                            GestureDetector(
-                                              onTap: () {
-                                                showViolationDetails();
-                                              },
-                                              child: TextWidget(
-                                                align: TextAlign.start,
-                                                text: 'January 01, 2001',
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                        ])
-                                ]),
-                          ),
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       )
                     ],
