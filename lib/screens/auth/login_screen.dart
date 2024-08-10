@@ -1,3 +1,10 @@
+import 'dart:convert';
+import 'package:enforcer_app/widgets/toast_widget.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:enforcer_app/network/api_service.dart';
+import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/forgot_password_widget.dart';
@@ -15,6 +22,55 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final email = TextEditingController();
   final password = TextEditingController();
+
+  final network = Network();
+
+  final box = GetStorage();
+
+  Future<void> login(String enforcerEmail, String enforcerPassword) async {
+    final url = Uri.parse('${ApiEndpoints.baseUrl}auth/token');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({"email": enforcerEmail, "password": enforcerPassword}),
+    );
+
+    if (response.statusCode == 200) {
+      box.write('token', jsonDecode(response.body)['token']);
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) {
+          return false;
+        },
+      );
+    } else {
+      showToast(jsonDecode(response.body)['message']);
+    }
+  }
+
+  // Future<void> getUserData() async {
+  //   final url = Uri.parse('http://192.168.0.150:8000/api/v1/me');
+
+  //   final response = await http.get(
+  //     url,
+  //     headers: {
+  //       'Accept': 'application/json',
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     print('User data retrieved successfully: $data');
+  //   } else {
+  //     print('Failed to retrieve user data: ${response.statusCode}');
+  //     print('Response body: ${response.body}');
+  //   }
+  // }
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -103,13 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Login',
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const HomeScreen()),
-                          (route) {
-                            return false;
-                          },
-                        );
+                        login(email.text, password.text);
                       }
                     },
                   ),

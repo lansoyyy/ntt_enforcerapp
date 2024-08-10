@@ -7,9 +7,11 @@ class Network {
 
 
   Future<http.Response> get(String endpoint) async {
+   
     final url = Uri.parse('${ApiEndpoints.baseUrl}$endpoint');
     final response = await http.get(url);
     _checkStatusCode(response);
+  
     return response;
   }
 
