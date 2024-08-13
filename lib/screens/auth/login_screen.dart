@@ -42,8 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       box.write('token', jsonDecode(response.body)['token']);
 
+      print(jsonDecode(response.body));
+
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
         (route) {
           return false;
         },
@@ -52,25 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
       showToast(jsonDecode(response.body)['message']);
     }
   }
-
-  // Future<void> getUserData() async {
-  //   final url = Uri.parse('http://192.168.0.150:8000/api/v1/me');
-
-  //   final response = await http.get(
-  //     url,
-  //     headers: {
-  //       'Accept': 'application/json',
-  //     },
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     final data = jsonDecode(response.body);
-  //     print('User data retrieved successfully: $data');
-  //   } else {
-  //     print('Failed to retrieve user data: ${response.statusCode}');
-  //     print('Response body: ${response.body}');
-  //   }
-  // }
 
   final _formKey = GlobalKey<FormState>();
   @override

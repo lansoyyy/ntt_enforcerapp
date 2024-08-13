@@ -11,6 +11,7 @@ class TextFieldWidget extends StatefulWidget {
   final int? maxLine;
   final TextInputType? inputType;
   late bool? showEye;
+  late bool? enabled;
   late Color? color;
   late Color? borderColor;
   late Color? hintColor;
@@ -33,6 +34,7 @@ class TextFieldWidget extends StatefulWidget {
     this.hintColor = Colors.black,
     this.borderColor = Colors.transparent,
     this.showEye = false,
+    this.enabled = true,
     this.color = Colors.black,
     this.radius = 5,
     this.hasValidator = true,
@@ -68,6 +70,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               ),
               textCapitalization: widget.textCapitalization!,
               keyboardType: widget.inputType,
+              enabled: widget.enabled,
               decoration: InputDecoration(
                 suffixIcon: widget.showEye! == true
                     ? IconButton(
