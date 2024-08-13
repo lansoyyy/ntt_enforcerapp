@@ -10,6 +10,7 @@ import 'package:enforcer_app/widgets/date_picker_widget.dart';
 import 'package:enforcer_app/widgets/logout_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
+import 'package:enforcer_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -61,6 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
       final data = jsonDecode(response.body);
       print('User data retrieved successfully: $data');
 
+      box.write('id', data['id']);
+      box.write('name', '${data['first_name']} ${data['last_name']}');
+      box.write('location', data['lgu']['name']);
+
       setState(() {
         enforcerData = data;
       });
@@ -109,10 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: primary,
         onPressed: () {
-          getTicket();
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(builder: (context) => const AddTicketScreen()),
-          // );
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AddTicketScreen()),
+          );
         },
         child: const Icon(
           Icons.add,
@@ -379,7 +383,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: ListView.separated(
                                       itemCount: violations.length,
                                       separatorBuilder: (context, index) {
-                                        return const Divider();
+                                        return DateTime.parse(violations[index]
+                                                        ['date_issued'])
+                                                    .day ==
+                                                selectedDate?.day
+                                            ? const Divider()
+                                            : const SizedBox();
                                       },
                                       itemBuilder: (context, index) {
                                         return DateTime.parse(violations[index]

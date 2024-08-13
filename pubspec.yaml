@@ -39,6 +39,7 @@ dependencies:
   http:
   dio:
   get_storage:
+  intl:
 
 dev_dependencies:
   flutter_test:

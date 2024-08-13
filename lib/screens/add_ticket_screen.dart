@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/utils/violation_data.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
@@ -5,7 +8,9 @@ import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:enforcer_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../utils/colors.dart';
 
 class AddTicketScreen extends StatefulWidget {
@@ -173,6 +178,46 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     width: double.infinity,
                     label: hasSelected ? 'Save Ticket' : 'Continue',
                     onPressed: () {
+                      if (hasSelected) {
+                        addTicket(jsonEncode({
+                          "number": "123123123",
+                          "enforcer_id": box.read('id'),
+                          "enforcer_name": "${box.read('name')}",
+                          "location": "${box.read('location')}",
+                          "barangay_id": null,
+                          "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
+                              .format(DateTime.now()),
+                          "status": "UNPAID",
+                          "driver": {
+                            "license_number": license.text,
+                            "first_name": fname.text,
+                            "last_name": lname.text,
+                            "address": address.text,
+                            "email": "",
+                            "phone": "",
+                            "date_of_birth": ""
+                          },
+                          "vehicle_type": vehicletype.text,
+                          "vehicle_plate": plateno.text,
+                          "vehicle_owner": owner.text,
+                          "vehicle_owner_address": owneraddress.text,
+                          "verified_license": false,
+                          "verified_plate": false,
+                          "violations": [
+                            {
+                              "id": null,
+                              "violation_id": 1,
+                              "violation": "No Helmet",
+                              "fine": "100.00",
+                              "penalty": null,
+                              "recurrence": 1
+                            }
+                          ],
+                          "remarks": ""
+                        }));
+                      } else {
+                        showViolations();
+                      }
                       // if (_formKey.currentState!.validate()) {
                       //   if (hasSelected) {
                       //     showToast('Ticket saved succesfully!');
@@ -188,8 +233,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       //     showViolations();
                       //   }
                       // }
-
-                      showViolations();
                     },
                   ),
                 ),
@@ -468,5 +511,34 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         );
       },
     );
+  }
+
+  final box = GetStorage();
+
+  Future<void> addTicket(dynamic body) async {
+    final token = box.read('token');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Add 'Bearer' prefix
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      showToast('Ticket created succesfully!');
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) {
+          return false;
+        },
+      );
+    } else {
+      showToast(jsonDecode(response.body)['message']);
+    }
   }
 }
