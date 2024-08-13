@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate;
 
   final fname = TextEditingController();
   final lname = TextEditingController();
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getTicket() async {
     final token = box.read('token');
 
-    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets?descending=true');
 
     final response = await http.get(
       url,
@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final DateTime? pickedDate =
                                         await datePickerWidget(
                                       context,
-                                      selectedDate,
+                                      selectedDate ?? DateTime.now(),
                                     );
 
                                     if (pickedDate != null &&
@@ -291,88 +291,183 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(
                               height: 5,
                             ),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: violations.length,
-                                separatorBuilder: (context, index) {
-                                  return const Divider();
-                                },
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          TextWidget(
-                                            text: 'Name',
-                                            fontSize: 11,
-                                            color: Colors.grey,
-                                          ),
-                                          TextWidget(
-                                            text:
-                                                '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
-                                            fontSize: 15,
-                                            color: Colors.black,
-                                            fontFamily: 'Bold',
-                                          ),
-                                          TextWidget(
-                                            text: 'Violation',
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                          ),
-                                          for (int i = 0;
-                                              i <
-                                                  violations[index]
-                                                          ['violations']
-                                                      .length;
-                                              i++)
-                                            TextWidget(
-                                              text: violations[index]
-                                                      ['violations'][i]
-                                                  ['violation'],
-                                              fontSize: 12,
-                                              color: Colors.black,
-                                              fontFamily: 'Bold',
+                            selectedDate == null
+                                ? Expanded(
+                                    child: ListView.separated(
+                                      itemCount: violations.length,
+                                      separatorBuilder: (context, index) {
+                                        return const Divider();
+                                      },
+                                      itemBuilder: (context, index) {
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                TextWidget(
+                                                  text: 'Name',
+                                                  fontSize: 11,
+                                                  color: Colors.grey,
+                                                ),
+                                                TextWidget(
+                                                  text:
+                                                      '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontFamily: 'Bold',
+                                                ),
+                                                TextWidget(
+                                                  text: 'Violation',
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                ),
+                                                for (int i = 0;
+                                                    i <
+                                                        violations[index]
+                                                                ['violations']
+                                                            .length;
+                                                    i++)
+                                                  TextWidget(
+                                                    text: violations[index]
+                                                            ['violations'][i]
+                                                        ['violation'],
+                                                    fontSize: 12,
+                                                    color: Colors.black,
+                                                    fontFamily: 'Bold',
+                                                  ),
+                                                TextWidget(
+                                                  text: 'Date and Time Issued',
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                ),
+                                                TextWidget(
+                                                  text: violations[index]
+                                                      ['date_issued'],
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                  fontFamily: 'Bold',
+                                                ),
+                                              ],
                                             ),
-                                          TextWidget(
-                                            text: 'Date and Time Issued',
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                          ),
-                                          TextWidget(
-                                            text: violations[index]
-                                                ['date_issued'],
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                            fontFamily: 'Bold',
-                                          ),
-                                        ],
-                                      ),
-                                      const Expanded(child: SizedBox()),
-                                      IconButton(
-                                        onPressed: () {
-                                          showViolationDetails(
-                                              violations[index]);
-                                        },
-                                        icon: const Icon(
-                                          size: 35,
-                                          Icons.visibility,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            )
+                                            const Expanded(child: SizedBox()),
+                                            IconButton(
+                                              onPressed: () {
+                                                showViolationDetails(
+                                                    violations[index]);
+                                              },
+                                              icon: const Icon(
+                                                size: 35,
+                                                Icons.visibility,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: ListView.separated(
+                                      itemCount: violations.length,
+                                      separatorBuilder: (context, index) {
+                                        return const Divider();
+                                      },
+                                      itemBuilder: (context, index) {
+                                        return DateTime.parse(violations[index]
+                                                        ['date_issued'])
+                                                    .day ==
+                                                selectedDate?.day
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      TextWidget(
+                                                        text: 'Name',
+                                                        fontSize: 11,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      TextWidget(
+                                                        text:
+                                                            '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                        fontFamily: 'Bold',
+                                                      ),
+                                                      TextWidget(
+                                                        text: 'Violation',
+                                                        fontSize: 10,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      for (int i = 0;
+                                                          i <
+                                                              violations[index][
+                                                                      'violations']
+                                                                  .length;
+                                                          i++)
+                                                        TextWidget(
+                                                          text: violations[
+                                                                      index]
+                                                                  ['violations']
+                                                              [i]['violation'],
+                                                          fontSize: 12,
+                                                          color: Colors.black,
+                                                          fontFamily: 'Bold',
+                                                        ),
+                                                      TextWidget(
+                                                        text:
+                                                            'Date and Time Issued',
+                                                        fontSize: 10,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      TextWidget(
+                                                        text: violations[index]
+                                                            ['date_issued'],
+                                                        fontSize: 12,
+                                                        color: Colors.black,
+                                                        fontFamily: 'Bold',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Expanded(
+                                                      child: SizedBox()),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      showViolationDetails(
+                                                          violations[index]);
+                                                    },
+                                                    icon: const Icon(
+                                                      size: 35,
+                                                      Icons.visibility,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 20,
+                                                  ),
+                                                ],
+                                              )
+                                            : const SizedBox();
+                                      },
+                                    ),
+                                  )
                           ],
                         ),
                       ),
