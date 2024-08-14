@@ -316,6 +316,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 TextWidget(
+                                                  text: 'Ticket Number',
+                                                  fontSize: 11,
+                                                  color: Colors.grey,
+                                                ),
+                                                TextWidget(
+                                                  text:
+                                                      '${violations[index]['number']}',
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontFamily: 'Bold',
+                                                ),
+                                                TextWidget(
                                                   text: 'Name',
                                                   fontSize: 11,
                                                   color: Colors.grey,
