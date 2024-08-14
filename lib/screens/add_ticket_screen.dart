@@ -180,7 +180,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     onPressed: () {
                       if (hasSelected) {
                         addTicket(jsonEncode({
-                          "number": "123123123",
+                          "number": "SAMPLE",
                           "enforcer_id": box.read('id'),
                           "enforcer_name": "${box.read('name')}",
                           "location": "${box.read('location')}",

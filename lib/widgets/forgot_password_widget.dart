@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:enforcer_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 forgotpassword(BuildContext context) {
   return showDialog(
@@ -53,10 +57,21 @@ forgotpassword(BuildContext context) {
             onPressed: (() async {
               if (formKey.currentState!.validate()) {
                 try {
-                  Navigator.pop(context);
+                  final url =
+                      Uri.parse('${ApiEndpoints.baseUrl}forgot-password');
 
-                  showToast(
-                      'Password reset link sent to ${emailController.text}');
+                  final response = await http.post(
+                    url,
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                    },
+                    body: jsonEncode({"email": emailController.text}),
+                  );
+
+                  showToast(jsonDecode(response.body)['message']);
+
+                  Navigator.pop(context);
                 } catch (e) {
                   String errorMessage = '';
 

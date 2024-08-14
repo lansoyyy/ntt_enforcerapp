@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print(jsonDecode(response.body));
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
         (route) {
           return false;
         },
