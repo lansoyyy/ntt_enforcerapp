@@ -35,6 +35,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   List selectedViolations = [];
 
+  List selectedViolationIds = [];
+
   bool hasSelected = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -377,49 +379,53 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                         ),
                                     ],
                                   ),
-                                  value:
-                                      selectedViolations.contains(jsonEncode({
-                                    "id": null,
-                                    "violation_id": violation['id'],
-                                    "violation": violation['description'],
-                                    "fine": violation['fines']
-                                        .first['fine']
-                                        .toString()
-                                        .split('.')[0],
-                                    "penalty": null,
-                                    "recurrence":
-                                        violation['fines'].first['recurrence'],
-                                  })),
-                                  onChanged: (bool? value) {
+                                  value: selectedViolationIds
+                                      .contains(violation['id']),
+                                  onChanged: (bool? value) async {
+                                    final token = box.read('token');
+                                    final url = Uri.parse(
+                                        '${ApiEndpoints.baseUrl}tickets/driver_violations/?license_number=null&violation_id=${violation['id']}');
+
+                                    final response = await http.get(
+                                      url,
+                                      headers: {
+                                        'Accept': 'application/json',
+                                        'Authorization': 'Bearer $token',
+                                      },
+                                    );
+
+                                    final response1 =
+                                        jsonDecode(response.body)['violation'];
+
                                     setState(
                                       () {
                                         if (value!) {
+                                          selectedViolationIds
+                                              .add(violation['id']);
                                           selectedViolations.add(jsonEncode({
                                             "id": null,
                                             "violation_id": violation['id'],
                                             "violation":
                                                 violation['description'],
-                                            "fine": violation['fines']
-                                                .first['fine']
-                                                .toString()
-                                                .split('.')[0],
+                                            "fine":
+                                                response1['fine'].split('.')[0],
                                             "penalty": null,
-                                            "recurrence": violation['fines']
-                                                .first['recurrence'],
+                                            "recurrence":
+                                                response1['recurrence'],
                                           }));
                                         } else {
+                                          selectedViolationIds
+                                              .remove(violation['id']);
                                           selectedViolations.remove(jsonEncode({
                                             "id": null,
                                             "violation_id": violation['id'],
                                             "violation":
                                                 violation['description'],
-                                            "fine": violation['fines']
-                                                .first['fine']
-                                                .toString()
-                                                .split('.')[0],
+                                            "fine":
+                                                response1['fine'].split('.')[0],
                                             "penalty": null,
-                                            "recurrence": violation['fines']
-                                                .first['recurrence'],
+                                            "recurrence":
+                                                response1['recurrence'],
                                           }));
                                         }
                                       },
