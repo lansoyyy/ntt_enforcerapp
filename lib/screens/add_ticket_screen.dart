@@ -33,7 +33,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   final vehicletype = TextEditingController();
 
-  Map<String, bool> checkedValues = {};
+  List selectedViolations = [];
 
   bool hasSelected = false;
 
@@ -47,8 +47,40 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     // TODO: implement initState
 
     super.initState();
-    for (var violation in violations) {
-      checkedValues[violation.code] = false;
+
+    getViolations();
+  }
+
+  bool hasLoaded = false;
+
+  List newViolations = [];
+
+  List finalViolations = [];
+
+  Future<void> getViolations() async {
+    final token = box.read('token');
+
+    final url = Uri.parse(
+        '${ApiEndpoints.baseUrl}violations?sortBy=number&descending=false&status=ACTIVE');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Add 'Bearer' prefix
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      setState(() {
+        newViolations = data['data'];
+        hasLoaded = true;
+      });
+    } else {
+      print('Failed to retrieve user data: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
@@ -61,189 +93,151 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         foregroundColor: Colors.white,
         backgroundColor: primary,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text(
-                    'DRIVER INFORMATION',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Bold'),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 270,
-                      child: TextFieldWidget(
+      body: hasLoaded
+          ? Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          'DRIVER INFORMATION',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Bold'),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 270,
+                            child: TextFieldWidget(
+                              width: double.infinity,
+                              controller: license,
+                              label: 'License No.',
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.verified,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextFieldWidget(
                         width: double.infinity,
-                        controller: license,
-                        label: 'License No.',
+                        controller: address,
+                        label: 'Address',
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.verified,
-                      ),
-                    ),
-                  ],
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: address,
-                  label: 'Address',
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: fname,
-                  label: 'Firstname',
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: lname,
-                  label: 'Lastname',
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  color: Colors.grey[200],
-                  thickness: 2,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Center(
-                  child: Text(
-                    'VEHICLE INFORMATION',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.red,
-                      fontFamily: 'Bold',
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 270,
-                      child: TextFieldWidget(
+                      TextFieldWidget(
                         width: double.infinity,
-                        controller: plateno,
-                        label: 'Plate No.',
+                        controller: fname,
+                        label: 'Firstname',
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.verified,
+                      TextFieldWidget(
+                        width: double.infinity,
+                        controller: lname,
+                        label: 'Lastname',
                       ),
-                    ),
-                  ],
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: vehicletype,
-                  label: 'Type of Vehicle',
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: owner,
-                  label: 'Name of Owner',
-                ),
-                TextFieldWidget(
-                  width: double.infinity,
-                  controller: owneraddress,
-                  label: 'Address of Owner',
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: ButtonWidget(
-                    width: double.infinity,
-                    label: hasSelected ? 'Save Ticket' : 'Continue',
-                    onPressed: () {
-                      if (hasSelected) {
-                        addTicket(jsonEncode({
-                          "number": "SAMPLE",
-                          "enforcer_id": box.read('id'),
-                          "enforcer_name": "${box.read('name')}",
-                          "location": "${box.read('location')}",
-                          "barangay_id": null,
-                          "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
-                              .format(DateTime.now()),
-                          "status": "UNPAID",
-                          "driver": {
-                            "license_number": license.text,
-                            "first_name": fname.text,
-                            "last_name": lname.text,
-                            "address": address.text,
-                            "email": "",
-                            "phone": "",
-                            "date_of_birth": ""
-                          },
-                          "vehicle_type": vehicletype.text,
-                          "vehicle_plate": plateno.text,
-                          "vehicle_owner": owner.text,
-                          "vehicle_owner_address": owneraddress.text,
-                          "verified_license": false,
-                          "verified_plate": false,
-                          "violations": [
-                            {
-                              "id": null,
-                              "violation_id": 1,
-                              "violation": "No Helmet",
-                              "fine": "100.00",
-                              "penalty": null,
-                              "recurrence": 1
-                            }
-                          ],
-                          "remarks": ""
-                        }));
-                      } else {
-                        showViolations();
-                      }
-                      // if (_formKey.currentState!.validate()) {
-                      //   if (hasSelected) {
-                      //     showToast('Ticket saved succesfully!');
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        color: Colors.grey[200],
+                        thickness: 2,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Center(
+                        child: Text(
+                          'VEHICLE INFORMATION',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.red,
+                            fontFamily: 'Bold',
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 270,
+                            child: TextFieldWidget(
+                              width: double.infinity,
+                              controller: plateno,
+                              label: 'Plate No.',
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.verified,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextFieldWidget(
+                        width: double.infinity,
+                        controller: vehicletype,
+                        label: 'Type of Vehicle',
+                      ),
+                      TextFieldWidget(
+                        width: double.infinity,
+                        controller: owner,
+                        label: 'Name of Owner',
+                      ),
+                      TextFieldWidget(
+                        width: double.infinity,
+                        controller: owneraddress,
+                        label: 'Address of Owner',
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: ButtonWidget(
+                          width: double.infinity,
+                          label: hasSelected ? 'Save Ticket' : 'Continue',
+                          onPressed: () {
+                            if (hasSelected) {
+                              showToast('Ticket saved succesfully!');
 
-                      //     Navigator.of(context).pushAndRemoveUntil(
-                      //       MaterialPageRoute(
-                      //           builder: (context) => const HomeScreen()),
-                      //       (route) {
-                      //         return false;
-                      //       },
-                      //     );
-                      //   } else {
-                      //     showViolations();
-                      //   }
-                      // }
-                    },
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeScreen()),
+                                (route) {
+                                  return false;
+                                },
+                              );
+                            } else {
+                              showViolations();
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 25,
-                ),
-              ],
+              ),
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -275,14 +269,18 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         const Expanded(
                           child: SizedBox(),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showViolationDetailsDialog();
-                            },
-                            icon: const Icon(
-                              Icons.save,
-                            )),
+                        selectedViolations.isEmpty
+                            ? const SizedBox()
+                            : IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+
+                                  showViolationDetailsDialog(
+                                      selectedViolations);
+                                },
+                                icon: const Icon(
+                                  Icons.save,
+                                )),
                         IconButton(
                             onPressed: () {
                               Navigator.pop(context);
@@ -334,69 +332,104 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     ),
                   ),
                   SizedBox(
-                      height: 225,
-                      width: 375,
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) {
-                          return Divider(
-                            color: Colors.grey[200],
-                            thickness: 2,
-                          );
-                        },
-                        itemCount: violations.length,
-                        itemBuilder: (context, index) {
-                          var violation = violations[index];
-                          return SizedBox(
-                            width: 300,
-                            height: 85,
-                            child: CheckboxListTile(
-                              title: Text(
-                                '${violation.code} - ${violation.description}',
-                                style: const TextStyle(
-                                  fontFamily: 'Regular',
-                                  color: Colors.grey,
-                                  fontSize: 14,
+                    height: 225,
+                    width: 375,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) {
+                        return Divider(
+                          color: Colors.grey[200],
+                          thickness: 2,
+                        );
+                      },
+                      itemCount: newViolations.length,
+                      itemBuilder: (context, index) {
+                        var violation = newViolations[index];
+                        return !violation['description']
+                                .toLowerCase()
+                                .contains(nameSearched.toLowerCase())
+                            ? const SizedBox()
+                            : SizedBox(
+                                width: 300,
+                                height: 85,
+                                child: CheckboxListTile(
+                                  title: Text(
+                                    '${violation['description']}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Regular',
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      for (int i = 0;
+                                          i < violation['fines'].length;
+                                          i++)
+                                        Text(
+                                          '${violation['fines'][i]['recurrence']} Offense: ${violation['fines'][i]['fine']}',
+                                          style: const TextStyle(
+                                            fontFamily: 'Regular',
+                                            color: Colors.green,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  value:
+                                      selectedViolations.contains(jsonEncode({
+                                    "id": null,
+                                    "violation_id": violation['id'],
+                                    "violation": violation['description'],
+                                    "fine": violation['fines']
+                                        .first['fine']
+                                        .toString()
+                                        .split('.')[0],
+                                    "penalty": null,
+                                    "recurrence":
+                                        violation['fines'].first['recurrence'],
+                                  })),
+                                  onChanged: (bool? value) {
+                                    setState(
+                                      () {
+                                        if (value!) {
+                                          selectedViolations.add(jsonEncode({
+                                            "id": null,
+                                            "violation_id": violation['id'],
+                                            "violation":
+                                                violation['description'],
+                                            "fine": violation['fines']
+                                                .first['fine']
+                                                .toString()
+                                                .split('.')[0],
+                                            "penalty": null,
+                                            "recurrence": violation['fines']
+                                                .first['recurrence'],
+                                          }));
+                                        } else {
+                                          selectedViolations.remove(jsonEncode({
+                                            "id": null,
+                                            "violation_id": violation['id'],
+                                            "violation":
+                                                violation['description'],
+                                            "fine": violation['fines']
+                                                .first['fine']
+                                                .toString()
+                                                .split('.')[0],
+                                            "penalty": null,
+                                            "recurrence": violation['fines']
+                                                .first['recurrence'],
+                                          }));
+                                        }
+                                      },
+                                    );
+                                  },
                                 ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'First Offense: ${violation.fines.values.elementAt(0)}',
-                                    style: const TextStyle(
-                                      fontFamily: 'Regular',
-                                      color: Colors.green,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Second Offense: ${violation.fines.values.elementAt(1)}',
-                                    style: const TextStyle(
-                                      fontFamily: 'Regular',
-                                      color: Colors.green,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Third Offense: ${violation.fines.values.elementAt(2)}',
-                                    style: const TextStyle(
-                                      fontFamily: 'Regular',
-                                      color: Colors.green,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              value: checkedValues[violation.code],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  checkedValues[violation.code] = value!;
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      )),
+                              );
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 10),
                 ],
               );
@@ -405,7 +438,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     );
   }
 
-  showViolationDetailsDialog() {
+  showViolationDetailsDialog(List newViolations) {
+    print(newViolations);
+
+    int total = 0;
+
+    for (int i = 0; i < newViolations.length; i++) {
+      total += int.parse(jsonDecode(newViolations[i])['fine']);
+    }
     return showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -416,50 +456,42 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (int i = 0; i < 5; i++)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextWidget(
-                        text: 'No Helmet',
-                        fontSize: 14,
-                        fontFamily: 'Bold',
-                      ),
-                      TextWidget(
-                        text: '3rd offense',
-                        fontSize: 12,
-                        fontFamily: 'Medium',
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              TextWidget(
-                                text: 'P 2000.00',
-                                fontSize: 12,
-                                fontFamily: 'Medium',
-                              ),
-                              TextWidget(
-                                text: 'REV OF DL',
-                                fontSize: 12,
-                                fontFamily: 'Medium',
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.delete_outline_outlined,
-                              color: Colors.red,
+                for (int i = 0; i < newViolations.length; i++)
+                  Builder(builder: (context) {
+                    dynamic violations = jsonDecode(newViolations[i]);
+
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextWidget(
+                          text: violations['violation'],
+                          fontSize: 14,
+                          fontFamily: 'Bold',
+                        ),
+                        TextWidget(
+                          text: '${violations['recurrence']} offense',
+                          fontSize: 12,
+                          fontFamily: 'Medium',
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                TextWidget(
+                                  text: 'P ${violations['fine']}',
+                                  fontSize: 12,
+                                  fontFamily: 'Medium',
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
                 const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -470,7 +502,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       fontFamily: 'Bold',
                     ),
                     TextWidget(
-                      text: 'P 10,000.00',
+                      text: 'P $total.00',
                       fontSize: 14,
                       fontFamily: 'Bold',
                     ),
@@ -491,6 +523,36 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     ),
                     MaterialButton(
                       onPressed: () async {
+                        for (int i = 0; i < newViolations.length; i++) {
+                          finalViolations.add(jsonDecode(newViolations[i]));
+                        }
+
+                        addTicket(jsonEncode({
+                          "enforcer_id": box.read('id'),
+                          "enforcer_name": "${box.read('name')}",
+                          "location": "${box.read('location')}",
+                          "barangay_id": null,
+                          "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
+                              .format(DateTime.now()),
+                          "status": "UNPAID",
+                          "driver": {
+                            "license_number": license.text,
+                            "first_name": fname.text,
+                            "last_name": lname.text,
+                            "address": address.text,
+                            "email": "",
+                            "phone": "",
+                            "date_of_birth": ""
+                          },
+                          "vehicle_type": vehicletype.text,
+                          "vehicle_plate": plateno.text,
+                          "vehicle_owner": owner.text,
+                          "vehicle_owner_address": owneraddress.text,
+                          "verified_license": false,
+                          "verified_plate": false,
+                          "violations": finalViolations,
+                          "remarks": ""
+                        }));
                         setState(() {
                           hasSelected = true;
                         });
