@@ -439,8 +439,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   }
 
   showViolationDetailsDialog(List newViolations) {
-    print(newViolations);
-
     int total = 0;
 
     for (int i = 0; i < newViolations.length; i++) {
