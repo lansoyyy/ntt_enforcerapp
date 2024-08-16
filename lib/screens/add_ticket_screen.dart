@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
+import 'package:enforcer_app/services/sunmi_service.dart';
 import 'package:enforcer_app/utils/violation_data.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
@@ -120,18 +121,26 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       ),
                       Row(
                         children: [
-                          SizedBox(
-                            width: 270,
-                            child: TextFieldWidget(
-                              width: double.infinity,
-                              controller: license,
-                              label: 'License No.',
+                          Form(
+                            onChanged: () {
+                              setState(() {});
+                            },
+                            child: SizedBox(
+                              width: 270,
+                              child: TextFieldWidget(
+                                width: double.infinity,
+                                controller: license,
+                                label: 'License No.',
+                              ),
                             ),
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.verified,
+                              color: license.text != ''
+                                  ? Colors.green
+                                  : Colors.grey,
                             ),
                           ),
                         ],
@@ -174,18 +183,26 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       ),
                       Row(
                         children: [
-                          SizedBox(
-                            width: 270,
-                            child: TextFieldWidget(
-                              width: double.infinity,
-                              controller: plateno,
-                              label: 'Plate No.',
+                          Form(
+                            onChanged: () {
+                              setState(() {});
+                            },
+                            child: SizedBox(
+                              width: 270,
+                              child: TextFieldWidget(
+                                width: double.infinity,
+                                controller: plateno,
+                                label: 'Plate No.',
+                              ),
                             ),
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.verified,
+                              color: plateno.text != ''
+                                  ? Colors.green
+                                  : Colors.grey,
                             ),
                           ),
                         ],
@@ -579,6 +596,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     );
   }
 
+  SunmiService printer = SunmiService();
   final box = GetStorage();
 
   Future<void> addTicket(dynamic body) async {
@@ -597,6 +615,16 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       showToast('Ticket created succesfully!');
+
+      printer.printReceipt(
+          license.text,
+          address.text,
+          '${fname.text} ${lname.text}',
+          plateno.text,
+          vehicletype.text,
+          owner.text,
+          owneraddress.text,
+          finalViolations);
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (route) {
