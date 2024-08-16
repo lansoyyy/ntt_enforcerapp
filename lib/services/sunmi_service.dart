@@ -98,6 +98,8 @@ class SunmiService {
     await initialize();
 
     await printLogoImage();
+
+    printText('TRAFFIC CITATION TICKET');
     await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.now()));
     await printRowAndColumns(
       column1: "License:",
