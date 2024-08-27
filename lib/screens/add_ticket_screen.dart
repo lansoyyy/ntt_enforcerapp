@@ -364,6 +364,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       itemBuilder: (context, index) {
                         var violation = newViolations[index];
                         return !violation['description']
+                                .toString()
                                 .toLowerCase()
                                 .contains(nameSearched.toLowerCase())
                             ? const SizedBox()
