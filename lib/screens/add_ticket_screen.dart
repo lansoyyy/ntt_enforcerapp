@@ -355,15 +355,22 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     width: 375,
                     child: ListView.separated(
                       separatorBuilder: (context, index) {
-                        return Divider(
-                          color: Colors.grey[200],
-                          thickness: 2,
-                        );
+                        var violation = newViolations[index];
+                        return !violation['violation']
+                                .toString()
+                                .toLowerCase()
+                                .contains(nameSearched.toLowerCase())
+                            ? const SizedBox()
+                            : Divider(
+                                color: Colors.grey[200],
+                                thickness: 2,
+                              );
                       },
                       itemCount: newViolations.length,
                       itemBuilder: (context, index) {
                         var violation = newViolations[index];
-                        return !violation['description']
+
+                        return !violation['violation']
                                 .toString()
                                 .toLowerCase()
                                 .contains(nameSearched.toLowerCase())
@@ -373,7 +380,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 height: 85,
                                 child: CheckboxListTile(
                                   title: Text(
-                                    '${violation['description']}',
+                                    '${violation['violation']}',
                                     style: const TextStyle(
                                       fontFamily: 'Regular',
                                       color: Colors.grey,
@@ -423,8 +430,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                           selectedViolations.add(jsonEncode({
                                             "id": null,
                                             "violation_id": violation['id'],
-                                            "violation":
-                                                violation['description'],
+                                            "violation": violation['violation'],
                                             "fine":
                                                 response1['fine'].split('.')[0],
                                             "penalty": null,
@@ -437,8 +443,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                           selectedViolations.remove(jsonEncode({
                                             "id": null,
                                             "violation_id": violation['id'],
-                                            "violation":
-                                                violation['description'],
+                                            "violation": violation['violation'],
                                             "fine":
                                                 response1['fine'].split('.')[0],
                                             "penalty": null,

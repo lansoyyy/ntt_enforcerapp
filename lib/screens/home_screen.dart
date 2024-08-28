@@ -350,13 +350,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 ['violations']
                                                             .length;
                                                     i++)
-                                                  TextWidget(
-                                                    text: violations[index]
-                                                            ['violations'][i]
-                                                        ['violation'],
-                                                    fontSize: 12,
-                                                    color: Colors.black,
-                                                    fontFamily: 'Bold',
+                                                  SizedBox(
+                                                    width: 250,
+                                                    child: TextWidget(
+                                                      align: TextAlign.start,
+                                                      text:
+                                                          '• ${violations[index]['violations'][i]['violation']}',
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                      fontFamily: 'Bold',
+                                                    ),
                                                   ),
                                                 TextWidget(
                                                   text: 'Date and Time Issued',
@@ -505,13 +508,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   showViolationDetails(data) {
     setState(() {
-      address.text = data['driver_address'];
-      fname.text = data['driver_first_name'];
-      lname.text = data['driver_last_name'];
-      plateno.text = data['vehicle_plate'];
-      vehicletype.text = data['vehicle_type'];
-      owner.text = data['vehicle_owner'];
-      owneraddress.text = data['vehicle_owner_address'];
+      address.text = data['driver_address'] ?? '';
+      fname.text = data['driver_first_name'] ?? '';
+      lname.text = data['driver_last_name'] ?? '';
+      plateno.text = data['vehicle_plate'] ?? '';
+      vehicletype.text = data['vehicle_type'] ?? '';
+      owner.text = data['vehicle_owner'] ?? '';
+      owneraddress.text = data['vehicle_owner_address'] ?? '';
     });
     showDialog(
       context: context,
