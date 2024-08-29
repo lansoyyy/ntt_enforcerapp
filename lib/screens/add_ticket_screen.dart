@@ -263,12 +263,15 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   showViolations() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
-        return SizedBox(
-            height: 500,
-            width: double.infinity,
-            child: StatefulBuilder(builder: (context, setState) {
-              return Column(
+        return StatefulBuilder(builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: SizedBox(
+              height: 625,
+              width: double.infinity,
+              child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
@@ -351,7 +354,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 225,
+                    height: 450,
                     width: 375,
                     child: ListView.separated(
                       separatorBuilder: (context, index) {
@@ -377,7 +380,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             ? const SizedBox()
                             : SizedBox(
                                 width: 300,
-                                height: 85,
+                                height: 110,
                                 child: CheckboxListTile(
                                   title: Text(
                                     '${violation['violation']}',
@@ -461,8 +464,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
-              );
-            }));
+              ),
+            ),
+          );
+        });
       },
     );
   }
@@ -480,121 +485,135 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           height: 500,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (int i = 0; i < newViolations.length; i++)
-                  Builder(builder: (context) {
-                    dynamic violations = jsonDecode(newViolations[i]);
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < newViolations.length; i++)
+                    Builder(builder: (context) {
+                      dynamic violations = jsonDecode(newViolations[i]);
 
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextWidget(
-                          text: violations['violation'],
-                          fontSize: 14,
-                          fontFamily: 'Bold',
-                        ),
-                        TextWidget(
-                          text: '${violations['recurrence']} offense',
-                          fontSize: 12,
-                          fontFamily: 'Medium',
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                TextWidget(
-                                  text: 'P ${violations['fine']}',
-                                  fontSize: 12,
-                                  fontFamily: 'Medium',
+                      return Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: TextWidget(
+                                  maxLines: 3,
+                                  align: TextAlign.start,
+                                  text: '- ${violations['violation']}',
+                                  fontSize: 14,
+                                  fontFamily: 'Bold',
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              TextWidget(
+                                text: '${violations['recurrence']} offense',
+                                fontSize: 12,
+                                fontFamily: 'Medium',
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      TextWidget(
+                                        text: 'P ${violations['fine']}',
+                                        fontSize: 12,
+                                        fontFamily: 'Medium',
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Divider(),
+                        ],
+                      );
+                    }),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextWidget(
+                        text: 'Total',
+                        fontSize: 14,
+                        fontFamily: 'Bold',
+                      ),
+                      TextWidget(
+                        text: 'P $total.00',
+                        fontSize: 14,
+                        fontFamily: 'Bold',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text(
+                          'Close',
+                          style: TextStyle(
+                              fontFamily: 'QRegular',
+                              fontWeight: FontWeight.bold),
                         ),
-                      ],
-                    );
-                  }),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextWidget(
-                      text: 'Total',
-                      fontSize: 14,
-                      fontFamily: 'Bold',
-                    ),
-                    TextWidget(
-                      text: 'P $total.00',
-                      fontSize: 14,
-                      fontFamily: 'Bold',
-                    ),
-                  ],
-                ),
-                const Expanded(child: SizedBox()),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    MaterialButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text(
-                        'Close',
-                        style: TextStyle(
-                            fontFamily: 'QRegular',
-                            fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    MaterialButton(
-                      onPressed: () async {
-                        for (int i = 0; i < newViolations.length; i++) {
-                          finalViolations.add(jsonDecode(newViolations[i]));
-                        }
+                      MaterialButton(
+                        onPressed: () async {
+                          for (int i = 0; i < newViolations.length; i++) {
+                            finalViolations.add(jsonDecode(newViolations[i]));
+                          }
 
-                        addTicket(jsonEncode({
-                          "enforcer_id": box.read('id'),
-                          "enforcer_name": "${box.read('name')}",
-                          "location": "${box.read('location')}",
-                          "barangay_id": null,
-                          "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
-                              .format(DateTime.now()),
-                          "status": "UNPAID",
-                          "driver": {
-                            "license_number": license.text,
-                            "first_name": fname.text,
-                            "last_name": lname.text,
-                            "address": address.text,
-                            "email": "",
-                            "phone": "",
-                            "date_of_birth": ""
-                          },
-                          "vehicle_type": vehicletype.text,
-                          "vehicle_plate": plateno.text,
-                          "vehicle_owner": owner.text,
-                          "vehicle_owner_address": owneraddress.text,
-                          "verified_license": false,
-                          "verified_plate": false,
-                          "violations": finalViolations,
-                          "remarks": ""
-                        }));
-                        setState(() {
-                          hasSelected = true;
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(
-                            fontFamily: 'QRegular',
-                            fontWeight: FontWeight.bold),
+                          addTicket(jsonEncode({
+                            "enforcer_id": box.read('id'),
+                            "enforcer_name": "${box.read('name')}",
+                            "location": "${box.read('location')}",
+                            "barangay_id": null,
+                            "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
+                                .format(DateTime.now()),
+                            "status": "UNPAID",
+                            "driver": {
+                              "license_number": license.text,
+                              "first_name": fname.text,
+                              "last_name": lname.text,
+                              "address": address.text,
+                              "email": "",
+                              "phone": "",
+                              "date_of_birth": ""
+                            },
+                            "vehicle_type": vehicletype.text,
+                            "vehicle_plate": plateno.text,
+                            "vehicle_owner": owner.text,
+                            "vehicle_owner_address": owneraddress.text,
+                            "verified_license": false,
+                            "verified_plate": false,
+                            "violations": finalViolations,
+                            "remarks": ""
+                          }));
+                          setState(() {
+                            hasSelected = true;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'Continue',
+                          style: TextStyle(
+                              fontFamily: 'QRegular',
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
