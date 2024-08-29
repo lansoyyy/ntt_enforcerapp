@@ -303,6 +303,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return const Divider();
                                       },
                                       itemBuilder: (context, index) {
+                                        // Ensure the list is sorted by date_issued in descending order
+                                        violations.sort((a, b) {
+                                          DateTime dateA =
+                                              DateTime.parse(a['date_issued']);
+                                          DateTime dateB =
+                                              DateTime.parse(b['date_issued']);
+                                          return dateB.compareTo(
+                                              dateA); // Sort in descending order
+                                        });
+
                                         return Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -447,14 +457,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       'violations']
                                                                   .length;
                                                           i++)
-                                                        TextWidget(
-                                                          text: violations[
-                                                                      index]
-                                                                  ['violations']
-                                                              [i]['violation'],
-                                                          fontSize: 12,
-                                                          color: Colors.black,
-                                                          fontFamily: 'Bold',
+                                                        SizedBox(
+                                                          width: 250,
+                                                          child: TextWidget(
+                                                            align:
+                                                                TextAlign.start,
+                                                            text: violations[
+                                                                        index][
+                                                                    'violations']
+                                                                [
+                                                                i]['violation'],
+                                                            fontSize: 12,
+                                                            color: Colors.black,
+                                                            fontFamily: 'Bold',
+                                                          ),
                                                         ),
                                                       TextWidget(
                                                         text:
@@ -542,18 +558,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 10,
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: address,
                     label: 'Address',
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: fname,
                     label: 'Firstname',
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: lname,
@@ -581,29 +600,66 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: plateno,
                     label: 'Plate No.',
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: vehicletype,
                     label: 'Type of Vehicle',
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: owner,
                     label: 'Name of Owner',
                   ),
                   TextFieldWidget(
+                    hint: 'No value',
                     enabled: false,
                     width: double.infinity,
                     controller: owneraddress,
                     label: 'Address of Owner',
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Center(
+                    child: Text(
+                      'VIOLATIONS',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red,
+                        fontFamily: 'Bold',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  for (int i = 0; i < data['violations'].length; i++)
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: 300,
+                          child: TextWidget(
+                            align: TextAlign.start,
+                            text: '- ${data['violations'][i]['violation']}',
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontFamily: 'Bold',
+                          ),
+                        ),
+                        const Divider(),
+                      ],
+                    ),
                   const SizedBox(
                     height: 20,
                   ),

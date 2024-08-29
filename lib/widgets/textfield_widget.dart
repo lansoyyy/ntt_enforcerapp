@@ -85,7 +85,8 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                     : const SizedBox(),
                 filled: true,
                 fillColor: Colors.grey[100],
-                hintText: 'Enter ${widget.label}',
+                hintText:
+                    widget.hint == '' ? 'Enter ${widget.label}' : widget.hint,
                 border: InputBorder.none,
                 disabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
