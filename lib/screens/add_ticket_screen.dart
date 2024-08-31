@@ -672,23 +672,61 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      showToast('Ticket created succesfully!');
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: const Text(
+                  'Do you want to print the citation ticket?',
+                  style: TextStyle(fontFamily: 'QRegular'),
+                ),
+                actions: <Widget>[
+                  MaterialButton(
+                    onPressed: () {
+                      showToast('Ticket created succesfully!');
 
-      printer.printReceipt(
-          license.text,
-          address.text,
-          '${fname.text} ${lname.text}',
-          plateno.text,
-          vehicletype.text,
-          owner.text,
-          owneraddress.text,
-          finalViolations);
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) {
-          return false;
-        },
-      );
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                        (route) {
+                          return false;
+                        },
+                      );
+                    },
+                    child: const Text(
+                      'No',
+                      style: TextStyle(
+                          fontFamily: 'QRegular', fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  MaterialButton(
+                    onPressed: () async {
+                      showToast('Ticket created succesfully!');
+
+                      printer.printReceipt(
+                          license.text,
+                          address.text,
+                          '${fname.text} ${lname.text}',
+                          plateno.text,
+                          vehicletype.text,
+                          owner.text,
+                          owneraddress.text,
+                          finalViolations);
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                        (route) {
+                          return false;
+                        },
+                      );
+                    },
+                    child: const Text(
+                      'Yes',
+                      style: TextStyle(
+                          fontFamily: 'QRegular', fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ));
     } else {
       showToast(jsonDecode(response.body)['message']);
     }
