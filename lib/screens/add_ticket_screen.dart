@@ -129,8 +129,16 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               width: 270,
                               child: TextFieldWidget(
                                 width: double.infinity,
+                                hasValidator: true,
                                 controller: license,
                                 label: 'License No.',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a licese no.';
+                                  }
+
+                                  return null;
+                                },
                               ),
                             ),
                           ),
@@ -146,6 +154,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         ],
                       ),
                       TextFieldWidget(
+                        hasValidator: false,
                         width: double.infinity,
                         controller: address,
                         label: 'Address',
@@ -154,11 +163,25 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         width: double.infinity,
                         controller: fname,
                         label: 'Firstname',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter drivers firstname';
+                          }
+
+                          return null;
+                        },
                       ),
                       TextFieldWidget(
                         width: double.infinity,
                         controller: lname,
                         label: 'Lastname',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter drivers lastname';
+                          }
+
+                          return null;
+                        },
                       ),
                       const SizedBox(
                         height: 10,
@@ -210,16 +233,19 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       TextFieldWidget(
                         width: double.infinity,
                         controller: vehicletype,
+                        hasValidator: false,
                         label: 'Type of Vehicle',
                       ),
                       TextFieldWidget(
                         width: double.infinity,
                         controller: owner,
+                        hasValidator: false,
                         label: 'Name of Owner',
                       ),
                       TextFieldWidget(
                         width: double.infinity,
                         controller: owneraddress,
+                        hasValidator: false,
                         label: 'Address of Owner',
                       ),
                       const SizedBox(
@@ -241,7 +267,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 },
                               );
                             } else {
-                              showViolations();
+                              if (license.text != '') {
+                                if (_formKey.currentState!.validate()) {
+                                  showViolations();
+                                }
+                              } else {
+                                showToast(
+                                    'Cannot proceed! Please input license number');
+                              }
                             }
                           },
                         ),
