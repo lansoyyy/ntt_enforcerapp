@@ -445,7 +445,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                   onChanged: (bool? value) async {
                                     final token = box.read('token');
                                     final url = Uri.parse(
-                                        '${ApiEndpoints.baseUrl}tickets/driver_violations/?license_number=null&violation_id=${violation['id']}');
+                                        '${ApiEndpoints.baseUrl}tickets/driver_violations/?license_number=${license.text}&violation_id=${violation['id']}');
 
                                     final response = await http.get(
                                       url,

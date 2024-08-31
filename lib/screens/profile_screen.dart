@@ -177,10 +177,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             TextFieldWidget(
-                label: 'Current Password', controller: currentPassword),
-            TextFieldWidget(label: 'New Password', controller: newPassword),
+                showEye: true,
+                isObscure: true,
+                label: 'Current Password',
+                controller: currentPassword),
             TextFieldWidget(
-                label: 'Confirm Password', controller: confirmPassword),
+              label: 'New Password',
+              controller: newPassword,
+              showEye: true,
+              isObscure: true,
+            ),
+            TextFieldWidget(
+                showEye: true,
+                isObscure: true,
+                label: 'Confirm Password',
+                controller: confirmPassword),
             const SizedBox(
               height: 10,
             ),
