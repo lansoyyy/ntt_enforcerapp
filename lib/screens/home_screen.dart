@@ -4,6 +4,7 @@ import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/add_ticket_screen.dart';
 import 'package:enforcer_app/screens/auth/login_screen.dart';
 import 'package:enforcer_app/screens/notif_screen.dart';
+import 'package:enforcer_app/screens/profile_screen.dart';
 import 'package:enforcer_app/utils/colors.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/date_picker_widget.dart';
@@ -152,6 +153,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       TextWidget(
                         text: 'Announcements',
+                        fontSize: 14,
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const ProfileScreen()),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      TextWidget(
+                        text: 'Profile',
                         fontSize: 14,
                       ),
                     ],
