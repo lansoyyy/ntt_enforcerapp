@@ -197,12 +197,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ButtonWidget(
               label: 'Submit',
-              onPressed: () {},
+              onPressed: () {
+                changePassword({
+                  "current_password": currentPassword.text,
+                  "password": newPassword.text,
+                  "password_confirmation": confirmPassword.text
+                });
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> changePassword(Map body) async {
+    final token = box.read('token');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}users/change_password/3');
+
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Add 'Bearer' prefix
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      showToast('Password was succesfully updated.');
+
+      currentPassword.clear();
+      newPassword.clear();
+      confirmPassword.clear();
+    } else {
+      showToast(jsonDecode(response.body)['message']);
+    }
   }
 
   Future<void> updateProfile(Map body) async {
