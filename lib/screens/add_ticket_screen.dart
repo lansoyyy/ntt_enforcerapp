@@ -267,14 +267,11 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 },
                               );
                             } else {
-                              if (license.text != '') {
-                                if (_formKey.currentState!.validate()) {
-                                  showViolations();
-                                }
-                              } else {
-                                showToast(
-                                    'Cannot proceed! Please input license number');
-                              }
+                              // if (_formKey.currentState!.validate()) {
+                              //   showViolations();
+                              // }
+
+                              showViolations();
                             }
                           },
                         ),
@@ -461,18 +458,22 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                     setState(
                                       () {
                                         if (value!) {
-                                          selectedViolationIds
-                                              .add(violation['id']);
-                                          selectedViolations.add(jsonEncode({
-                                            "id": null,
-                                            "violation_id": violation['id'],
-                                            "violation": violation['violation'],
-                                            "fine":
-                                                response1['fine'].split('.')[0],
-                                            "penalty": null,
-                                            "recurrence":
-                                                response1['recurrence'],
-                                          }));
+                                          if (!selectedViolationIds
+                                              .contains(violation['id'])) {
+                                            selectedViolationIds
+                                                .add(violation['id']);
+                                            selectedViolations.add(jsonEncode({
+                                              "id": null,
+                                              "violation_id": violation['id'],
+                                              "violation":
+                                                  violation['violation'],
+                                              "fine": response1['fine']
+                                                  .split('.')[0],
+                                              "penalty": null,
+                                              "recurrence":
+                                                  response1['recurrence'],
+                                            }));
+                                          }
                                         } else {
                                           selectedViolationIds
                                               .remove(violation['id']);
