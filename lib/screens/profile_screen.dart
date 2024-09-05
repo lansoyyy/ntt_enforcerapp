@@ -213,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> changePassword(Map body) async {
     final token = box.read('token');
-    final url = Uri.parse('${ApiEndpoints.baseUrl}users/change_password/3');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}users/change_password/20');
 
     final response = await http.patch(
       url,
