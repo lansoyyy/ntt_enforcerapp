@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +26,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime? selectedDate;
+  DateTime selectedDate = DateTime.now();
 
   final fname = TextEditingController();
   final lname = TextEditingController();
@@ -76,10 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
   Future<void> getTicket() async {
     final token = box.read('token');
 
-    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets?descending=true');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets?sortBy=date_issued&descending=true&page=1&rowsPerPage=15&rowsNumber=0&search=&date_issued={%22from%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22,%22to%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22}');
 
     final response = await http.get(
       url,
@@ -91,6 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
+
+      
 
       setState(() {
         violations = data['data'];
@@ -111,6 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+   
+       
+    
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primary,
@@ -306,7 +314,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         pickedDate != selectedDate) {
                                       setState(() {
                                         selectedDate = pickedDate;
+                                        hasLoaded = false;
                                       });
+
+
+                                      getTicket();
                                     }
                                   },
                                   icon: const Icon(
@@ -318,14 +330,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(
                               height: 5,
                             ),
-                            selectedDate == null
-                                ? Expanded(
+                           Expanded(
                                     child: ListView.separated(
                                       itemCount: violations.length,
                                       separatorBuilder: (context, index) {
+
+                                        
                                         return const Divider();
                                       },
                                       itemBuilder: (context, index) {
+
+                                        
+                           
+                           
                                         // Ensure the list is sorted by date_issued in descending order
                                         violations.sort((a, b) {
                                           DateTime dateA =
@@ -427,110 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                     ),
                                   )
-                                : Expanded(
-                                    child: ListView.separated(
-                                      itemCount: violations.length,
-                                      separatorBuilder: (context, index) {
-                                        return DateTime.parse(violations[index]
-                                                        ['date_issued'])
-                                                    .day ==
-                                                selectedDate?.day
-                                            ? const Divider()
-                                            : const SizedBox();
-                                      },
-                                      itemBuilder: (context, index) {
-                                        return DateTime.parse(violations[index]
-                                                        ['date_issued'])
-                                                    .day ==
-                                                selectedDate?.day
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      TextWidget(
-                                                        text: 'Name',
-                                                        fontSize: 11,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      TextWidget(
-                                                        text:
-                                                            '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
-                                                        fontSize: 15,
-                                                        color: Colors.black,
-                                                        fontFamily: 'Bold',
-                                                      ),
-                                                      TextWidget(
-                                                        text: 'Violation',
-                                                        fontSize: 10,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      for (int i = 0;
-                                                          i <
-                                                              violations[index][
-                                                                      'violations']
-                                                                  .length;
-                                                          i++)
-                                                        SizedBox(
-                                                          width: 250,
-                                                          child: TextWidget(
-                                                            align:
-                                                                TextAlign.start,
-                                                            text: violations[
-                                                                        index][
-                                                                    'violations']
-                                                                [
-                                                                i]['violation'],
-                                                            fontSize: 12,
-                                                            color: Colors.black,
-                                                            fontFamily: 'Bold',
-                                                          ),
-                                                        ),
-                                                      TextWidget(
-                                                        text:
-                                                            'Date and Time Issued',
-                                                        fontSize: 10,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      TextWidget(
-                                                        text: violations[index]
-                                                            ['date_issued'],
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                        fontFamily: 'Bold',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const Expanded(
-                                                      child: SizedBox()),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      showViolationDetails(
-                                                          violations[index]);
-                                                    },
-                                                    icon: const Icon(
-                                                      size: 35,
-                                                      Icons.visibility,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 20,
-                                                  ),
-                                                ],
-                                              )
-                                            : const SizedBox();
-                                      },
-                                    ),
-                                  )
+                              
                           ],
                         ),
                       ),

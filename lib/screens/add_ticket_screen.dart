@@ -54,6 +54,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     super.initState();
 
+
+    getBrgys();
+
     getViolations();
   }
 
@@ -90,8 +93,56 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     }
   }
 
+
+    List brgys = [];
+
+ 
+
+  Future<void> getBrgys() async {
+    final token = box.read('token');
+
+    final url = Uri.parse(
+        '${ApiEndpoints.baseUrl}lgus/1/barangays/select/');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Add 'Bearer' prefix
+      },
+    );
+
+
+    
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      
+
+      setState(() {
+        brgys = data['barangays'];
+
+
+    
+        
+      });
+    } else {
+      print('Failed to retrieve user data: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  }
+
+  String? _selectedValue;
+
+
   @override
   Widget build(BuildContext context) {
+
+  
+
+
+ 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -202,6 +253,38 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         label: 'Place of Apprehension',
                        
                       ),
+                      Container(
+                        width: double.infinity,
+                        height: 65,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DropdownButton<String>(
+                            underline: const SizedBox(),
+                                    value: _selectedValue,
+                                    hint: TextWidget(text: 'Barangay', fontSize: 18,),
+                                    items: [
+                                      for(int i =0; i < brgys.length; i++)
+                                      DropdownMenuItem<String>(
+                                        value: brgys[i]['value'].toString(),
+                                        child: TextWidget(text: brgys[i]['label'], fontSize: 14),
+                                      )
+                                    ],
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedValue = newValue;
+
+                                    
+                                        
+                                      });
+                                    },
+                                  ),
+                        ),
+                      ),
+      
                       const SizedBox(
                         height: 10,
                       ),
@@ -625,12 +708,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           }
 
 
-                          try {
+                     
                              addTicket(jsonEncode({
                             "enforcer_id": box.read('id'),
                             "enforcer_name": "${box.read('name')}",
                             "location": place.text,
-                            "barangay_id": null,
+                            "barangay_id": _selectedValue,
                             "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
                                 .format(DateTime.now()),
                             "status": "UNPAID",
@@ -657,9 +740,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           });
                           Navigator.pop(context);
                             
-                          } catch (e){
-                            showToast(e);
-                          }
+                       
 
                          
                         },
