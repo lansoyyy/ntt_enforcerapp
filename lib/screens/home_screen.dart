@@ -545,6 +545,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+    final driveremail = TextEditingController();
+      final phone = TextEditingController();
+        final place = TextEditingController();
+
   showViolationDetails(data) {
     setState(() {
       address.text = data['driver_address'] ?? '';
@@ -554,6 +558,9 @@ class _HomeScreenState extends State<HomeScreen> {
       vehicletype.text = data['vehicle_type'] ?? '';
       owner.text = data['vehicle_owner'] ?? '';
       owneraddress.text = data['vehicle_owner_address'] ?? '';
+      //  driveremail.text = data['vehicle_owner_address'] ?? '';
+      //   phone.text = data['vehicle_owner_address'] ?? '';
+      //    place.text = data['vehicle_owner_address'] ?? '';
     });
     showDialog(
       context: context,
@@ -566,123 +573,125 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Center(
-                    child: Text(
-                      'DRIVER INFORMATION',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Bold'),
-                    ),
-                  ),
+                
+                  TextWidget(text: 'TRAFFIC CITATION TICKET', fontSize: 18,),
                   const SizedBox(
                     height: 10,
                   ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: address,
-                    label: 'Address',
-                  ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: fname,
-                    label: 'Firstname',
-                  ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: lname,
-                    label: 'Lastname',
-                  ),
+                  TextWidget(text: 'Name: ${fname.text} ${lname.text}', fontSize: 14,),
                   const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(text: 'Address: ${address.text}', fontSize: 14,),
+                   const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(text: 'Driver Email: ${driveremail.text}', fontSize: 14,),
+                       const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(text: 'Phone Number: ${phone.text}', fontSize: 14,),
+                   const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(text: 'Place: ${place.text}', fontSize: 14,),
+                   const SizedBox(
                     height: 10,
                   ),
-                  Divider(
-                    color: Colors.grey[200],
-                    thickness: 2,
-                  ),
-                  const SizedBox(
+                  const Divider(),
+                   const SizedBox(
                     height: 10,
                   ),
-                  const Center(
-                    child: Text(
-                      'VEHICLE INFORMATION',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.red,
-                        fontFamily: 'Bold',
-                      ),
-                    ),
+                   
+                  TextWidget(text: 'Plate Number: ${plateno.text}', fontSize: 14,),
+                       const SizedBox(
+                    height: 5,
                   ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: plateno,
-                    label: 'Plate No.',
+                  TextWidget(text: 'Type of Vehicle: ${vehicletype.text}', fontSize: 14,),
+                       const SizedBox(
+                    height: 5,
                   ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: vehicletype,
-                    label: 'Type of Vehicle',
+                  TextWidget(text: 'Name of Owner: ${owner.text}', fontSize: 14,),
+                       const SizedBox(
+                    height: 5,
                   ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: owner,
-                    label: 'Name of Owner',
-                  ),
-                  TextFieldWidget(
-                    hint: 'No value',
-                    enabled: false,
-                    width: double.infinity,
-                    controller: owneraddress,
-                    label: 'Address of Owner',
-                  ),
-                  const SizedBox(
+                  TextWidget(text: 'Address of Owner: ${owneraddress.text}', fontSize: 14,),
+
+                    const SizedBox(
                     height: 10,
                   ),
-                  const Center(
-                    child: Text(
-                      'VIOLATIONS',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.red,
-                        fontFamily: 'Bold',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
+                  const Divider(),
+                   const SizedBox(
                     height: 10,
+                  ),
+                  
+                 
+                 
+                
+                 
+                 
+                     TextWidget(text: 'Violations', fontSize: 18,),
+                 
+                  
+                
+                  const SizedBox(
+                    height: 5,
                   ),
                   for (int i = 0; i < data['violations'].length; i++)
                     Column(
                       children: [
-                        SizedBox(
-                          width: 300,
-                          child: TextWidget(
-                            align: TextAlign.start,
-                            text: '- ${data['violations'][i]['violation']}',
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontFamily: 'Bold',
+                       Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: 150,
+                                child: TextWidget(
+                                  maxLines: 3,
+                                  align: TextAlign.start,
+                                  text: '- ${data['violations'][i]['violation']}',
+                                  fontSize: 14,
+                                  fontFamily: 'Bold',
+                                ),
+                              ),
+                              TextWidget(
+                                text: '${data['violations'][i]['recurrence']} offense',
+                                fontSize: 12,
+                                fontFamily: 'Medium',
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      TextWidget(
+                                        text: 'P ${data['violations'][i]['fine']}',
+                                        fontSize: 12,
+                                        fontFamily: 'Medium',
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ),
                         const Divider(),
                       ],
                     ),
+                    const SizedBox(
+                    height: 20,
+                  ),
+                  Center(
+                    child: ButtonWidget(
+                      width: double.infinity,
+                      label: 'Reprint Ticket',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),

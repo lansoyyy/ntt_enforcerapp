@@ -33,6 +33,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   final owneraddress = TextEditingController();
 
   final vehicletype = TextEditingController();
+    final driveremail = TextEditingController();
+      final phone = TextEditingController();
+        final place = TextEditingController();
 
   List selectedViolations = [];
 
@@ -129,16 +132,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               width: 270,
                               child: TextFieldWidget(
                                 width: double.infinity,
-                                hasValidator: true,
+                               
                                 controller: license,
                                 label: 'License No.',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a licese no.';
-                                  }
-
-                                  return null;
-                                },
+                               
                               ),
                             ),
                           ),
@@ -154,7 +151,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         ],
                       ),
                       TextFieldWidget(
-                        hasValidator: false,
+                        hasValidator: true,
                         width: double.infinity,
                         controller: address,
                         label: 'Address',
@@ -182,6 +179,28 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
                           return null;
                         },
+                      ),
+                       TextFieldWidget(
+                        hasValidator: false,
+                        width: double.infinity,
+                        controller: driveremail,
+                        label: 'Driver Email',
+                       
+                      ),
+                       TextFieldWidget(
+                        hasValidator: false,
+                        width: double.infinity,
+                        controller: phone,
+                        label: 'Phone Number',
+                        inputType: TextInputType.number,
+                       
+                      ),
+                        TextFieldWidget(
+                        hasValidator: false,
+                        width: double.infinity,
+                        controller: place,
+                        label: 'Place of Apprehension',
+                       
                       ),
                       const SizedBox(
                         height: 10,
@@ -267,11 +286,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 },
                               );
                             } else {
-                              // if (_formKey.currentState!.validate()) {
-                              //   showViolations();
-                              // }
+                              if (_formKey.currentState!.validate()) {
+                                showViolations();
+                              }
 
-                              showViolations();
                             }
                           },
                         ),
@@ -606,10 +624,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             finalViolations.add(jsonDecode(newViolations[i]));
                           }
 
-                          addTicket(jsonEncode({
+
+                          try {
+                             addTicket(jsonEncode({
                             "enforcer_id": box.read('id'),
                             "enforcer_name": "${box.read('name')}",
-                            "location": "${box.read('location')}",
+                            "location": place.text,
                             "barangay_id": null,
                             "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
                                 .format(DateTime.now()),
@@ -619,8 +639,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               "first_name": fname.text,
                               "last_name": lname.text,
                               "address": address.text,
-                              "email": "",
-                              "phone": "",
+                              "email": driveremail.text,
+                              "phone": phone.text,
                               "date_of_birth": ""
                             },
                             "vehicle_type": vehicletype.text,
@@ -636,6 +656,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             hasSelected = true;
                           });
                           Navigator.pop(context);
+                            
+                          } catch (e){
+                            showToast(e);
+                          }
+
+                         
                         },
                         child: const Text(
                           'Continue',
