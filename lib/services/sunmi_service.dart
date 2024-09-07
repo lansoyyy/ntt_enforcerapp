@@ -14,23 +14,23 @@ class SunmiService {
   }
 
   // print image
-  Future<void> printLogoImage() async {
-    await SunmiPrinter.lineWrap(1); // creates one line space
-    Uint8List byte = await _getImageFromAsset('assets/images/logo.png');
-    await SunmiPrinter.printImage(byte);
-    await SunmiPrinter.lineWrap(1); // creates one line space
-  }
+  // Future<void> printLogoImage() async {
+  //   await SunmiPrinter.lineWrap(1); // creates one line space
+  //   Uint8List byte = await _getImageFromAsset('assets/images/logo.png');
+  //   await SunmiPrinter.printImage(byte);
+  //   await SunmiPrinter.lineWrap(1); // creates one line space
+  // }
 
-  Future<Uint8List> readFileBytes(String path) async {
-    ByteData fileData = await rootBundle.load(path);
-    Uint8List fileUnit8List = fileData.buffer
-        .asUint8List(fileData.offsetInBytes, fileData.lengthInBytes);
-    return fileUnit8List;
-  }
+  // Future<Uint8List> readFileBytes(String path) async {
+  //   ByteData fileData = await rootBundle.load(path);
+  //   Uint8List fileUnit8List = fileData.buffer
+  //       .asUint8List(fileData.offsetInBytes, fileData.lengthInBytes);
+  //   return fileUnit8List;
+  // }
 
-  Future<Uint8List> _getImageFromAsset(String iconPath) async {
-    return await readFileBytes(iconPath);
-  }
+  // Future<Uint8List> _getImageFromAsset(String iconPath) async {
+  //   return await readFileBytes(iconPath);
+  // }
 
   // print text passed as parameter
   Future<void> printText(String text) async {
@@ -44,14 +44,14 @@ class SunmiService {
     await SunmiPrinter.lineWrap(1); // creates one line space
   }
 
-  // print text as qrcode
-  Future<void> printQRCode(String text) async {
-    // set alignment center
-    await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-    await SunmiPrinter.lineWrap(1); // creates one line space
-    await SunmiPrinter.printQRCode(text);
-    await SunmiPrinter.lineWrap(4); // creates one line space
-  }
+  // // print text as qrcode
+  // Future<void> printQRCode(String text) async {
+  //   // set alignment center
+  //   await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+  //   await SunmiPrinter.lineWrap(1); // creates one line space
+  //   await SunmiPrinter.printQRCode(text);
+  //   await SunmiPrinter.lineWrap(4); // creates one line space
+  // }
 
   // print row and 2 columns
   Future<void> printRowAndColumns({
@@ -97,7 +97,7 @@ class SunmiService {
       List violations) async {
     await initialize();
 
-    await printLogoImage();
+    // await printLogoImage();
 
     printText('TRAFFIC CITATION TICKET');
     await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.now()));

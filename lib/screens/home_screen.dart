@@ -18,6 +18,8 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
+import '../services/sunmi_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -113,6 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
     getUserData();
     getTicket();
   }
+
+    SunmiService printer = SunmiService();
 
   @override
   Widget build(BuildContext context) {
@@ -603,6 +607,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Reprint Ticket',
                       onPressed: () {
                         Navigator.pop(context);
+                         printer.printReceipt(
+                          license.text,
+                          address.text,
+                          '${fname.text} ${lname.text}',
+                          plateno.text,
+                          vehicletype.text,
+                          owner.text,
+                          owneraddress.text,
+                          data['violations']);
+
+                         
                       },
                     ),
                   ),
