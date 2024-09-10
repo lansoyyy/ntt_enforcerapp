@@ -34,14 +34,12 @@ class SunmiService {
 
   // print text passed as parameter
   Future<void> printText(String text) async {
-    await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printText(text,
         style: SunmiStyle(
           fontSize: SunmiFontSize.MD,
           bold: true,
           align: SunmiPrintAlign.CENTER,
         ));
-    await SunmiPrinter.lineWrap(1); // creates one line space
   }
 
   // // print text as qrcode
@@ -58,8 +56,6 @@ class SunmiService {
     String? column1 = "column 1",
     String? column2 = "column 2",
   }) async {
-    await SunmiPrinter.lineWrap(1); // creates one line space
-
     // set alignment center
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
 
@@ -68,16 +64,15 @@ class SunmiService {
     await SunmiPrinter.printRow(cols: [
       ColumnMaker(
         text: "$column1",
-        width: 10,
+        width: 8,
         align: SunmiPrintAlign.LEFT,
       ),
       ColumnMaker(
         text: "$column2",
-        width: 10,
+        width: 8,
         align: SunmiPrintAlign.CENTER,
       ),
     ]);
-    await SunmiPrinter.lineWrap(1); // creates one line space
   }
 
   /* its important to close the connection with the printer once you are done */
@@ -94,13 +89,15 @@ class SunmiService {
       String vehicle,
       String owner,
       String owneraddress,
-      List violations) async {
+      List violations,
+      String id) async {
     await initialize();
 
     // await printLogoImage();
 
     printText('TRAFFIC CITATION TICKET');
     await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.now()));
+    printText(id);
     await printRowAndColumns(
       column1: "License:",
       column2: license,

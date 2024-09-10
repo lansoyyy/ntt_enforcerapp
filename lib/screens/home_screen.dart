@@ -79,11 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Future<void> getTicket() async {
     final token = box.read('token');
 
-    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets?sortBy=date_issued&descending=true&page=1&rowsPerPage=15&rowsNumber=0&search=&date_issued={%22from%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22,%22to%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22}');
+    final url = Uri.parse(
+        '${ApiEndpoints.baseUrl}tickets?sortBy=date_issued&descending=true&page=1&rowsPerPage=15&rowsNumber=0&search=&date_issued={%22from%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22,%22to%22:%22${DateFormat('MM/dd/yyyy').format(selectedDate)}%22}');
 
     final response = await http.get(
       url,
@@ -95,9 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
-
-      
 
       setState(() {
         violations = data['data'];
@@ -116,13 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
     getTicket();
   }
 
-    SunmiService printer = SunmiService();
+  SunmiService printer = SunmiService();
 
   @override
   Widget build(BuildContext context) {
-   
-       
-    
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primary,
@@ -321,7 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         hasLoaded = false;
                                       });
 
-
                                       getTicket();
                                     }
                                   },
@@ -334,121 +327,113 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(
                               height: 5,
                             ),
-                           Expanded(
-                                    child: ListView.separated(
-                                      itemCount: violations.length,
-                                      separatorBuilder: (context, index) {
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: violations.length,
+                                separatorBuilder: (context, index) {
+                                  return const Divider();
+                                },
+                                itemBuilder: (context, index) {
+                                  // Ensure the list is sorted by date_issued in descending order
+                                  violations.sort((a, b) {
+                                    DateTime dateA =
+                                        DateTime.parse(a['date_issued']);
+                                    DateTime dateB =
+                                        DateTime.parse(b['date_issued']);
+                                    return dateB.compareTo(
+                                        dateA); // Sort in descending order
+                                  });
 
-                                        
-                                        return const Divider();
-                                      },
-                                      itemBuilder: (context, index) {
-
-                                        
-                           
-                           
-                                        // Ensure the list is sorted by date_issued in descending order
-                                        violations.sort((a, b) {
-                                          DateTime dateA =
-                                              DateTime.parse(a['date_issued']);
-                                          DateTime dateB =
-                                              DateTime.parse(b['date_issued']);
-                                          return dateB.compareTo(
-                                              dateA); // Sort in descending order
-                                        });
-
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                TextWidget(
-                                                  text: 'Ticket Number',
-                                                  fontSize: 11,
-                                                  color: Colors.grey,
-                                                ),
-                                                TextWidget(
-                                                  text:
-                                                      '${violations[index]['number']}',
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontFamily: 'Bold',
-                                                ),
-                                                TextWidget(
-                                                  text: 'Name',
-                                                  fontSize: 11,
-                                                  color: Colors.grey,
-                                                ),
-                                                TextWidget(
-                                                  text:
-                                                      '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontFamily: 'Bold',
-                                                ),
-                                                TextWidget(
-                                                  text: 'Violation',
-                                                  fontSize: 10,
-                                                  color: Colors.grey,
-                                                ),
-                                                for (int i = 0;
-                                                    i <
-                                                        violations[index]
-                                                                ['violations']
-                                                            .length;
-                                                    i++)
-                                                  SizedBox(
-                                                    width: 250,
-                                                    child: TextWidget(
-                                                      align: TextAlign.start,
-                                                      text:
-                                                          '• ${violations[index]['violations'][i]['violation']}',
-                                                      fontSize: 12,
-                                                      color: Colors.black,
-                                                      fontFamily: 'Bold',
-                                                    ),
-                                                  ),
-                                                TextWidget(
-                                                  text: 'Date and Time Issued',
-                                                  fontSize: 10,
-                                                  color: Colors.grey,
-                                                ),
-                                                TextWidget(
-                                                  text: violations[index]
-                                                      ['date_issued'],
-                                                  fontSize: 12,
-                                                  color: Colors.black,
-                                                  fontFamily: 'Bold',
-                                                ),
-                                              ],
-                                            ),
-                                            const Expanded(child: SizedBox()),
-                                            IconButton(
-                                              onPressed: () {
-                                                showViolationDetails(
-                                                    violations[index]);
-                                              },
-                                              icon: const Icon(
-                                                size: 35,
-                                                Icons.visibility,
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          TextWidget(
+                                            text: 'Ticket Number',
+                                            fontSize: 11,
+                                            color: Colors.grey,
+                                          ),
+                                          TextWidget(
+                                            text:
+                                                '${violations[index]['number']}',
+                                            fontSize: 15,
+                                            color: Colors.black,
+                                            fontFamily: 'Bold',
+                                          ),
+                                          TextWidget(
+                                            text: 'Name',
+                                            fontSize: 11,
+                                            color: Colors.grey,
+                                          ),
+                                          TextWidget(
+                                            text:
+                                                '${violations[index]['driver_first_name']} ${violations[index]['driver_last_name']}',
+                                            fontSize: 15,
+                                            color: Colors.black,
+                                            fontFamily: 'Bold',
+                                          ),
+                                          TextWidget(
+                                            text: 'Violation',
+                                            fontSize: 10,
+                                            color: Colors.grey,
+                                          ),
+                                          for (int i = 0;
+                                              i <
+                                                  violations[index]
+                                                          ['violations']
+                                                      .length;
+                                              i++)
+                                            SizedBox(
+                                              width: 250,
+                                              child: TextWidget(
+                                                align: TextAlign.start,
+                                                text:
+                                                    '• ${violations[index]['violations'][i]['violation']}',
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                                fontFamily: 'Bold',
                                               ),
                                             ),
-                                            const SizedBox(
-                                              width: 20,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  )
-                              
+                                          TextWidget(
+                                            text: 'Date and Time Issued',
+                                            fontSize: 10,
+                                            color: Colors.grey,
+                                          ),
+                                          TextWidget(
+                                            text: violations[index]
+                                                ['date_issued'],
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                            fontFamily: 'Bold',
+                                          ),
+                                        ],
+                                      ),
+                                      const Expanded(child: SizedBox()),
+                                      IconButton(
+                                        onPressed: () {
+                                          showViolationDetails(
+                                              violations[index]);
+                                        },
+                                        icon: const Icon(
+                                          size: 35,
+                                          Icons.visibility,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -463,11 +448,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-    final driveremail = TextEditingController();
-      final phone = TextEditingController();
-        final place = TextEditingController();
+  Future<void> getLicense(String id) async {
+    final token = box.read('token');
+
+    final url = Uri.parse('${ApiEndpoints.baseUrl}/tickets/$id');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Add 'Bearer' prefix
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      setState(() {
+        license.text = data['ticket']['driver']['license_number'];
+      });
+    } else {
+      print('Failed to retrieve user data: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  }
+
+  final driveremail = TextEditingController();
+  final phone = TextEditingController();
+  final place = TextEditingController();
 
   showViolationDetails(data) {
+    String input = data['number'];
+    // Extract the substring starting after the last hyphen
+    String numberString = input.substring(input.lastIndexOf('-') + 1);
+    // Remove leading zeros
+    numberString = numberString.replaceFirst(RegExp(r'^0+'), '');
+
+    getLicense(numberString);
     setState(() {
       address.text = data['driver_address'] ?? '';
       fname.text = data['driver_first_name'] ?? '';
@@ -476,9 +493,9 @@ class _HomeScreenState extends State<HomeScreen> {
       vehicletype.text = data['vehicle_type'] ?? '';
       owner.text = data['vehicle_owner'] ?? '';
       owneraddress.text = data['vehicle_owner_address'] ?? '';
-      //  driveremail.text = data['vehicle_owner_address'] ?? '';
-      //   phone.text = data['vehicle_owner_address'] ?? '';
-      //    place.text = data['vehicle_owner_address'] ?? '';
+      driveremail.text = data['driver_email'] ?? '';
+      phone.text = data['driver_phone'] ?? '';
+      place.text = data['place_of_apprehension'] ?? '';
     });
     showDialog(
       context: context,
@@ -491,114 +508,143 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                
-                  TextWidget(text: 'TRAFFIC CITATION TICKET', fontSize: 18,),
-                  const SizedBox(
-                    height: 10,
+                  TextWidget(
+                    text: 'TRAFFIC CITATION TICKET',
+                    fontSize: 18,
                   ),
-                  TextWidget(text: 'Name: ${fname.text} ${lname.text}', fontSize: 14,),
                   const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Address: ${address.text}', fontSize: 14,),
-                   const SizedBox(
+                  TextWidget(
+                    text: data['number'],
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Driver Email: ${driveremail.text}', fontSize: 14,),
-                       const SizedBox(
+                  TextWidget(
+                    text: 'Name: ${fname.text} ${lname.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Phone Number: ${phone.text}', fontSize: 14,),
-                   const SizedBox(
+                  TextWidget(
+                    text: 'Address: ${address.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Place: ${place.text}', fontSize: 14,),
-                   const SizedBox(
+                  TextWidget(
+                    text: 'Driver Email: ${driveremail.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(
+                    text: 'Phone Number: ${phone.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextWidget(
+                    text: 'Place: ${place.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 10,
                   ),
                   const Divider(),
-                   const SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                   
-                  TextWidget(text: 'Plate Number: ${plateno.text}', fontSize: 14,),
-                       const SizedBox(
+                  TextWidget(
+                    text: 'Plate Number: ${plateno.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Type of Vehicle: ${vehicletype.text}', fontSize: 14,),
-                       const SizedBox(
+                  TextWidget(
+                    text: 'Type of Vehicle: ${vehicletype.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Name of Owner: ${owner.text}', fontSize: 14,),
-                       const SizedBox(
+                  TextWidget(
+                    text: 'Name of Owner: ${owner.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 5,
                   ),
-                  TextWidget(text: 'Address of Owner: ${owneraddress.text}', fontSize: 14,),
-
-                    const SizedBox(
+                  TextWidget(
+                    text: 'Address of Owner: ${owneraddress.text}',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
                     height: 10,
                   ),
                   const Divider(),
-                   const SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  
-                 
-                 
-                
-                 
-                 
-                     TextWidget(text: 'Violations', fontSize: 18,),
-                 
-                  
-                
+                  TextWidget(
+                    text: 'Violations',
+                    fontSize: 18,
+                  ),
                   const SizedBox(
                     height: 5,
                   ),
                   for (int i = 0; i < data['violations'].length; i++)
                     Column(
                       children: [
-                       Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 150,
-                                child: TextWidget(
-                                  maxLines: 3,
-                                  align: TextAlign.start,
-                                  text: '- ${data['violations'][i]['violation']}',
-                                  fontSize: 14,
-                                  fontFamily: 'Bold',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              child: TextWidget(
+                                maxLines: 3,
+                                align: TextAlign.start,
+                                text: '- ${data['violations'][i]['violation']}',
+                                fontSize: 14,
+                                fontFamily: 'Bold',
+                              ),
+                            ),
+                            TextWidget(
+                              text:
+                                  '${data['violations'][i]['recurrence']} offense',
+                              fontSize: 12,
+                              fontFamily: 'Medium',
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    TextWidget(
+                                      text:
+                                          'P ${data['violations'][i]['fine']}',
+                                      fontSize: 12,
+                                      fontFamily: 'Medium',
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              TextWidget(
-                                text: '${data['violations'][i]['recurrence']} offense',
-                                fontSize: 12,
-                                fontFamily: 'Medium',
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      TextWidget(
-                                        text: 'P ${data['violations'][i]['fine']}',
-                                        fontSize: 12,
-                                        fontFamily: 'Medium',
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
+                        ),
                         const Divider(),
                       ],
                     ),
-                    const SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Center(
@@ -607,17 +653,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Reprint Ticket',
                       onPressed: () {
                         Navigator.pop(context);
-                         printer.printReceipt(
-                          license.text,
-                          address.text,
-                          '${fname.text} ${lname.text}',
-                          plateno.text,
-                          vehicletype.text,
-                          owner.text,
-                          owneraddress.text,
-                          data['violations']);
-
-                         
+                        printer.printReceipt(
+                            license.text,
+                            address.text,
+                            '${fname.text} ${lname.text}',
+                            plateno.text,
+                            vehicletype.text,
+                            owner.text,
+                            owneraddress.text,
+                            data['violations'],
+                            data['number']);
                       },
                     ),
                   ),

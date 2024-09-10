@@ -33,9 +33,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   final owneraddress = TextEditingController();
 
   final vehicletype = TextEditingController();
-    final driveremail = TextEditingController();
-      final phone = TextEditingController();
-        final place = TextEditingController();
+  final driveremail = TextEditingController();
+  final phone = TextEditingController();
+  final place = TextEditingController();
 
   List selectedViolations = [];
 
@@ -53,7 +53,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     // TODO: implement initState
 
     super.initState();
-
 
     getBrgys();
 
@@ -93,16 +92,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     }
   }
 
-
-    List brgys = [];
-
- 
+  List brgys = [];
 
   Future<void> getBrgys() async {
     final token = box.read('token');
 
-    final url = Uri.parse(
-        '${ApiEndpoints.baseUrl}lgus/1/barangays/select/');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}lgus/1/barangays/select/');
 
     final response = await http.get(
       url,
@@ -112,20 +107,11 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
       },
     );
 
-
-    
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      
-
       setState(() {
         brgys = data['barangays'];
-
-
-    
-        
       });
     } else {
       print('Failed to retrieve user data: ${response.statusCode}');
@@ -135,14 +121,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   String? _selectedValue;
 
-
   @override
   Widget build(BuildContext context) {
-
-  
-
-
- 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -183,10 +163,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               width: 270,
                               child: TextFieldWidget(
                                 width: double.infinity,
-                               
                                 controller: license,
                                 label: 'License No.',
-                               
                               ),
                             ),
                           ),
@@ -231,60 +209,56 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           return null;
                         },
                       ),
-                       TextFieldWidget(
+                      TextFieldWidget(
                         hasValidator: false,
                         width: double.infinity,
                         controller: driveremail,
                         label: 'Driver Email',
-                       
                       ),
-                       TextFieldWidget(
+                      TextFieldWidget(
                         hasValidator: false,
                         width: double.infinity,
                         controller: phone,
                         label: 'Phone Number',
                         inputType: TextInputType.number,
-                       
                       ),
-                        TextFieldWidget(
+                      TextFieldWidget(
                         hasValidator: false,
                         width: double.infinity,
                         controller: place,
                         label: 'Place of Apprehension',
-                       
                       ),
                       Container(
                         width: double.infinity,
                         height: 65,
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(5)
-                        ),
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(5)),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DropdownButton<String>(
                             underline: const SizedBox(),
-                                    value: _selectedValue,
-                                    hint: TextWidget(text: 'Barangay', fontSize: 18,),
-                                    items: [
-                                      for(int i =0; i < brgys.length; i++)
-                                      DropdownMenuItem<String>(
-                                        value: brgys[i]['value'].toString(),
-                                        child: TextWidget(text: brgys[i]['label'], fontSize: 14),
-                                      )
-                                    ],
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        _selectedValue = newValue;
-
-                                    
-                                        
-                                      });
-                                    },
-                                  ),
+                            value: _selectedValue,
+                            hint: TextWidget(
+                              text: 'Barangay',
+                              fontSize: 18,
+                            ),
+                            items: [
+                              for (int i = 0; i < brgys.length; i++)
+                                DropdownMenuItem<String>(
+                                  value: brgys[i]['value'].toString(),
+                                  child: TextWidget(
+                                      text: brgys[i]['label'], fontSize: 14),
+                                )
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedValue = newValue;
+                              });
+                            },
+                          ),
                         ),
                       ),
-      
                       const SizedBox(
                         height: 10,
                       ),
@@ -372,7 +346,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               if (_formKey.currentState!.validate()) {
                                 showViolations();
                               }
-
                             }
                           },
                         ),
@@ -707,9 +680,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             finalViolations.add(jsonDecode(newViolations[i]));
                           }
 
-
-                     
-                             addTicket(jsonEncode({
+                          addTicket(jsonEncode({
                             "enforcer_id": box.read('id'),
                             "enforcer_name": "${box.read('name')}",
                             "location": place.text,
@@ -739,10 +710,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             hasSelected = true;
                           });
                           Navigator.pop(context);
-                            
-                       
-
-                         
                         },
                         child: const Text(
                           'Continue',
@@ -818,7 +785,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           vehicletype.text,
                           owner.text,
                           owneraddress.text,
-                          finalViolations);
+                          finalViolations,
+                          '');
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
