@@ -748,6 +748,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (context) => AlertDialog(
                 content: const Text(
@@ -786,7 +787,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           owner.text,
                           owneraddress.text,
                           finalViolations,
-                          '');
+                          jsonDecode(response.body)['ticket']['number']);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),

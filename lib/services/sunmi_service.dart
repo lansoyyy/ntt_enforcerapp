@@ -64,12 +64,12 @@ class SunmiService {
     await SunmiPrinter.printRow(cols: [
       ColumnMaker(
         text: "$column1",
-        width: 8,
+        width: 13,
         align: SunmiPrintAlign.LEFT,
       ),
       ColumnMaker(
         text: "$column2",
-        width: 8,
+        width: 13,
         align: SunmiPrintAlign.CENTER,
       ),
     ]);
@@ -97,7 +97,7 @@ class SunmiService {
 
     printText('TRAFFIC CITATION TICKET');
     await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.now()));
-    printText(id);
+    await printText(id);
     await printRowAndColumns(
       column1: "License:",
       column2: license,
