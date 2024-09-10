@@ -90,7 +90,8 @@ class SunmiService {
       String owner,
       String owneraddress,
       List violations,
-      String id) async {
+      String id,
+      String total) async {
     await initialize();
 
     // await printLogoImage();
@@ -138,6 +139,10 @@ class SunmiService {
         column2: violations[i]['fine'],
       );
     }
+    await printRowAndColumns(
+      column1: "Total fine:",
+      column2: total,
+    );
 
     await SunmiPrinter.cut();
 

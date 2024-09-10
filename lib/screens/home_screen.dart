@@ -645,6 +645,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextWidget(
+                        text: 'Total fine:',
+                        fontSize: 16,
+                        fontFamily: 'Bold',
+                      ),
+                      TextWidget(
+                        text: '${data['violations'].fold(0.0, (sum, item) {
+                          // Convert 'fine' to double if it is a String
+                          var fineValue = item['fine'];
+                          double fine = (fineValue is String
+                                  ? double.tryParse(fineValue)
+                                  : fineValue) ??
+                              0.0;
+                          return sum + fine;
+                        })}',
+                        fontSize: 18,
+                        fontFamily: 'Bold',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
                     height: 20,
                   ),
                   Center(
@@ -662,7 +688,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             owner.text,
                             owneraddress.text,
                             data['violations'],
-                            data['number']);
+                            data['number'],
+                            '${data['violations'].fold(0.0, (sum, item) {
+                              // Convert 'fine' to double if it is a String
+                              var fineValue = item['fine'];
+                              double fine = (fineValue is String
+                                      ? double.tryParse(fineValue)
+                                      : fineValue) ??
+                                  0.0;
+                              return sum + fine;
+                            })}');
                       },
                     ),
                   ),
@@ -674,6 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: double.infinity,
                       label: 'Close',
                       onPressed: () {
+                        print(data['violations']);
                         Navigator.pop(context);
                       },
                     ),

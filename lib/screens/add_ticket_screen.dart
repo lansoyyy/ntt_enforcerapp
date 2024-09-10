@@ -680,32 +680,34 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             finalViolations.add(jsonDecode(newViolations[i]));
                           }
 
-                          addTicket(jsonEncode({
-                            "enforcer_id": box.read('id'),
-                            "enforcer_name": "${box.read('name')}",
-                            "location": place.text,
-                            "barangay_id": _selectedValue,
-                            "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
-                                .format(DateTime.now()),
-                            "status": "UNPAID",
-                            "driver": {
-                              "license_number": license.text,
-                              "first_name": fname.text,
-                              "last_name": lname.text,
-                              "address": address.text,
-                              "email": driveremail.text,
-                              "phone": phone.text,
-                              "date_of_birth": ""
-                            },
-                            "vehicle_type": vehicletype.text,
-                            "vehicle_plate": plateno.text,
-                            "vehicle_owner": owner.text,
-                            "vehicle_owner_address": owneraddress.text,
-                            "verified_license": false,
-                            "verified_plate": false,
-                            "violations": finalViolations,
-                            "remarks": ""
-                          }));
+                          addTicket(
+                              jsonEncode({
+                                "enforcer_id": box.read('id'),
+                                "enforcer_name": "${box.read('name')}",
+                                "location": place.text,
+                                "barangay_id": _selectedValue,
+                                "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
+                                    .format(DateTime.now()),
+                                "status": "UNPAID",
+                                "driver": {
+                                  "license_number": license.text,
+                                  "first_name": fname.text,
+                                  "last_name": lname.text,
+                                  "address": address.text,
+                                  "email": driveremail.text,
+                                  "phone": phone.text,
+                                  "date_of_birth": ""
+                                },
+                                "vehicle_type": vehicletype.text,
+                                "vehicle_plate": plateno.text,
+                                "vehicle_owner": owner.text,
+                                "vehicle_owner_address": owneraddress.text,
+                                "verified_license": false,
+                                "verified_plate": false,
+                                "violations": finalViolations,
+                                "remarks": ""
+                              }),
+                              '$total');
                           setState(() {
                             hasSelected = true;
                           });
@@ -732,7 +734,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   SunmiService printer = SunmiService();
   final box = GetStorage();
 
-  Future<void> addTicket(dynamic body) async {
+  Future<void> addTicket(dynamic body, String total) async {
     final token = box.read('token');
     final url = Uri.parse('${ApiEndpoints.baseUrl}tickets');
 
@@ -787,7 +789,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           owner.text,
                           owneraddress.text,
                           finalViolations,
-                          jsonDecode(response.body)['ticket']['number']);
+                          jsonDecode(response.body)['ticket']['number'],
+                          total);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
