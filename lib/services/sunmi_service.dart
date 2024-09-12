@@ -63,18 +63,8 @@ class SunmiService {
     // total width of columns should be 30
     await SunmiPrinter.printRow(cols: [
       ColumnMaker(
-        text: "$column1",
-        width: 13,
-        align: SunmiPrintAlign.LEFT,
-      ),
-      ColumnMaker(
-        text: "",
-        width: 7,
-        align: SunmiPrintAlign.LEFT,
-      ),
-      ColumnMaker(
-        text: "$column2",
-        width: 13,
+        text: "$column1:  $column2",
+        width: 30,
         align: SunmiPrintAlign.LEFT,
       ),
     ]);
@@ -97,13 +87,13 @@ class SunmiService {
       List violations,
       String id,
       String total,
-      DateTime dt) async {
+      String dt) async {
     await initialize();
 
     // await printLogoImage();
 
     printText('TRAFFIC CITATION TICKET');
-    await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(dt));
+    await printText(dt);
     await printText(id);
     await printRowAndColumns(
       column1: "License:",
@@ -145,10 +135,19 @@ class SunmiService {
         column2: violations[i]['fine'],
       );
     }
-    await printRowAndColumns(
-      column1: "Total fine:",
-      column2: total,
-    );
+
+    await SunmiPrinter.printRow(cols: [
+      ColumnMaker(
+        text: "Total fine:",
+        width: 15,
+        align: SunmiPrintAlign.LEFT,
+      ),
+      ColumnMaker(
+        text: total,
+        width: 15,
+        align: SunmiPrintAlign.LEFT,
+      ),
+    ]);
 
     await SunmiPrinter.cut();
 

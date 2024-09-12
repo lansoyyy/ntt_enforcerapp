@@ -698,7 +698,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   0.0;
                               return sum + fine;
                             })}',
-                            data['date_issued']);
+                            data['date_issued'].toString());
                       },
                     ),
                   ),

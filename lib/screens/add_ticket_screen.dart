@@ -791,7 +791,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           finalViolations,
                           jsonDecode(response.body)['ticket']['number'],
                           total,
-                          DateTime.now());
+                          DateFormat('yyyy-MM-dd – hh:mm a')
+                              .format(DateTime.now())
+                              .toString());
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
