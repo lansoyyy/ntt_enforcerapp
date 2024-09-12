@@ -790,7 +790,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           owneraddress.text,
                           finalViolations,
                           jsonDecode(response.body)['ticket']['number'],
-                          total);
+                          total,
+                          DateTime.now());
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),

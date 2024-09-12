@@ -697,7 +697,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       : fineValue) ??
                                   0.0;
                               return sum + fine;
-                            })}');
+                            })}',
+                            data['date_issued']);
                       },
                     ),
                   ),
@@ -709,7 +710,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: double.infinity,
                       label: 'Close',
                       onPressed: () {
-                        print(data['violations']);
                         Navigator.pop(context);
                       },
                     ),

@@ -68,9 +68,14 @@ class SunmiService {
         align: SunmiPrintAlign.LEFT,
       ),
       ColumnMaker(
+        text: "",
+        width: 7,
+        align: SunmiPrintAlign.LEFT,
+      ),
+      ColumnMaker(
         text: "$column2",
         width: 13,
-        align: SunmiPrintAlign.CENTER,
+        align: SunmiPrintAlign.LEFT,
       ),
     ]);
   }
@@ -91,13 +96,14 @@ class SunmiService {
       String owneraddress,
       List violations,
       String id,
-      String total) async {
+      String total,
+      DateTime dt) async {
     await initialize();
 
     // await printLogoImage();
 
     printText('TRAFFIC CITATION TICKET');
-    await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.now()));
+    await printText(DateFormat('yyyy-MM-dd – hh:mm a').format(dt));
     await printText(id);
     await printRowAndColumns(
       column1: "License:",
