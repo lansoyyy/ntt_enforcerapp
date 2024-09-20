@@ -63,7 +63,7 @@ class SunmiService {
     // total width of columns should be 30
     await SunmiPrinter.printRow(cols: [
       ColumnMaker(
-        text: "$column1:  $column2",
+        text: "$column1  $column2",
         width: 30,
         align: SunmiPrintAlign.LEFT,
       ),
@@ -148,6 +148,15 @@ class SunmiService {
         align: SunmiPrintAlign.LEFT,
       ),
     ]);
+
+    await printRowAndColumns(
+      column1: "",
+      column2: '',
+    );
+    await printRowAndColumns(
+      column1: "",
+      column2: '',
+    );
 
     await SunmiPrinter.cut();
 
