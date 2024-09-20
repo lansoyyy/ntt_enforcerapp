@@ -477,219 +477,197 @@ class _HomeScreenState extends State<HomeScreen> {
   final phone = TextEditingController();
   final place = TextEditingController();
 
-  showViolationDetails(data) {
+  showViolationDetails(data) async {
     String input = data['number'];
     // Extract the substring starting after the last hyphen
     String numberString = input.substring(input.lastIndexOf('-') + 1);
     // Remove leading zeros
     numberString = numberString.replaceFirst(RegExp(r'^0+'), '');
 
-    getLicense(numberString);
-    setState(() {
-      address.text = data['driver_address'] ?? '';
-      fname.text = data['driver_first_name'] ?? '';
-      lname.text = data['driver_last_name'] ?? '';
-      plateno.text = data['vehicle_plate'] ?? '';
-      vehicletype.text = data['vehicle_type'] ?? '';
-      owner.text = data['vehicle_owner'] ?? '';
-      owneraddress.text = data['vehicle_owner_address'] ?? '';
-      driveremail.text = data['driver_email'] ?? '';
-      phone.text = data['driver_phone'] ?? '';
-      place.text = data['place_of_apprehension'] ?? '';
-    });
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextWidget(
-                    text: 'TRAFFIC CITATION TICKET',
-                    fontSize: 18,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: data['number'],
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Name: ${fname.text} ${lname.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Address: ${address.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Driver Email: ${driveremail.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Phone Number: ${phone.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Place: ${place.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextWidget(
-                    text: 'Plate Number: ${plateno.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Type of Vehicle: ${vehicletype.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Name of Owner: ${owner.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  TextWidget(
-                    text: 'Address of Owner: ${owneraddress.text}',
-                    fontSize: 14,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextWidget(
-                    text: 'Violations',
-                    fontSize: 18,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  for (int i = 0; i < data['violations'].length; i++)
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    await getLicense(numberString).whenComplete(
+      () {
+        setState(() {
+          address.text = data['driver_address'] ?? '';
+          fname.text = data['driver_first_name'] ?? '';
+          lname.text = data['driver_last_name'] ?? '';
+          plateno.text = data['vehicle_plate'] ?? '';
+          vehicletype.text = data['vehicle_type'] ?? '';
+          owner.text = data['vehicle_owner'] ?? '';
+          owneraddress.text = data['vehicle_owner_address'] ?? '';
+          driveremail.text = data['driver_email'] ?? '';
+          phone.text = data['driver_phone'] ?? '';
+          place.text = data['place_of_apprehension'] ?? '';
+        });
+        showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextWidget(
+                        text: 'TRAFFIC CITATION TICKET',
+                        fontSize: 18,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: data['number'],
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Name: ${fname.text} ${lname.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Address: ${address.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Driver Email: ${driveremail.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Phone Number: ${phone.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Place: ${place.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextWidget(
+                        text: 'License Number: ${license.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Plate Number: ${plateno.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Type of Vehicle: ${vehicletype.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Name of Owner: ${owner.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      TextWidget(
+                        text: 'Address of Owner: ${owneraddress.text}',
+                        fontSize: 14,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextWidget(
+                        text: 'Violations',
+                        fontSize: 18,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      for (int i = 0; i < data['violations'].length; i++)
+                        Column(
                           children: [
-                            SizedBox(
-                              width: 150,
-                              child: TextWidget(
-                                maxLines: 3,
-                                align: TextAlign.start,
-                                text: '- ${data['violations'][i]['violation']}',
-                                fontSize: 14,
-                                fontFamily: 'Bold',
-                              ),
-                            ),
-                            TextWidget(
-                              text:
-                                  '${data['violations'][i]['recurrence']} offense',
-                              fontSize: 12,
-                              fontFamily: 'Medium',
-                            ),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                SizedBox(
+                                  width: 150,
+                                  child: TextWidget(
+                                    maxLines: 3,
+                                    align: TextAlign.start,
+                                    text:
+                                        '- ${data['violations'][i]['violation']}',
+                                    fontSize: 14,
+                                    fontFamily: 'Bold',
+                                  ),
+                                ),
+                                TextWidget(
+                                  text:
+                                      '${data['violations'][i]['recurrence']} offense',
+                                  fontSize: 12,
+                                  fontFamily: 'Medium',
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    TextWidget(
-                                      text:
-                                          'P ${data['violations'][i]['fine']}',
-                                      fontSize: 12,
-                                      fontFamily: 'Medium',
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        TextWidget(
+                                          text:
+                                              'P ${data['violations'][i]['fine']}',
+                                          fontSize: 12,
+                                          fontFamily: 'Medium',
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ],
                             ),
+                            const Divider(),
                           ],
                         ),
-                        const Divider(),
-                      ],
-                    ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextWidget(
-                        text: 'Total fine:',
-                        fontSize: 16,
-                        fontFamily: 'Bold',
+                      const SizedBox(
+                        height: 5,
                       ),
-                      TextWidget(
-                        text: '${data['violations'].fold(0.0, (sum, item) {
-                          // Convert 'fine' to double if it is a String
-                          var fineValue = item['fine'];
-                          double fine = (fineValue is String
-                                  ? double.tryParse(fineValue)
-                                  : fineValue) ??
-                              0.0;
-                          return sum + fine;
-                        })}',
-                        fontSize: 18,
-                        fontFamily: 'Bold',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: ButtonWidget(
-                      width: double.infinity,
-                      label: 'Reprint Ticket',
-                      onPressed: () {
-                        Navigator.pop(context);
-                        printer.printReceipt(
-                            license.text,
-                            address.text,
-                            '${fname.text} ${lname.text}',
-                            plateno.text,
-                            vehicletype.text,
-                            owner.text,
-                            owneraddress.text,
-                            data['violations'],
-                            data['number'],
-                            '${data['violations'].fold(0.0, (sum, item) {
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextWidget(
+                            text: 'Total fine:',
+                            fontSize: 16,
+                            fontFamily: 'Bold',
+                          ),
+                          TextWidget(
+                            text: '${data['violations'].fold(0.0, (sum, item) {
                               // Convert 'fine' to double if it is a String
                               var fineValue = item['fine'];
                               double fine = (fineValue is String
@@ -698,29 +676,64 @@ class _HomeScreenState extends State<HomeScreen> {
                                   0.0;
                               return sum + fine;
                             })}',
-                            data['date_issued'].toString());
-                      },
-                    ),
+                            fontSize: 18,
+                            fontFamily: 'Bold',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: ButtonWidget(
+                          width: double.infinity,
+                          label: 'Reprint Ticket',
+                          onPressed: () {
+                            Navigator.pop(context);
+                            printer.printReceipt(
+                                license.text,
+                                address.text,
+                                '${fname.text} ${lname.text}',
+                                plateno.text,
+                                vehicletype.text,
+                                owner.text,
+                                owneraddress.text,
+                                data['violations'],
+                                data['number'],
+                                '${data['violations'].fold(0.0, (sum, item) {
+                                  // Convert 'fine' to double if it is a String
+                                  var fineValue = item['fine'];
+                                  double fine = (fineValue is String
+                                          ? double.tryParse(fineValue)
+                                          : fineValue) ??
+                                      0.0;
+                                  return sum + fine;
+                                })}',
+                                data['date_issued'].toString());
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: ButtonWidget(
+                          width: double.infinity,
+                          label: 'Close',
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: ButtonWidget(
-                      width: double.infinity,
-                      label: 'Close',
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
