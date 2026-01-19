@@ -226,13 +226,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      showToast('Password was succesfully updated.');
+      showToast(context, 'Password was succesfully updated.');
 
       currentPassword.clear();
       newPassword.clear();
       confirmPassword.clear();
     } else {
-      showToast(jsonDecode(response.body)['message']);
+      showToast(context, jsonDecode(response.body)['message']);
     }
   }
 
@@ -251,10 +251,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      showToast('The User was succesfully updated.');
+      showToast(context, 'The User was succesfully updated.');
       getUserData();
     } else {
-      showToast(jsonDecode(response.body)['message']);
+      showToast(context, jsonDecode(response.body)['message']);
     }
   }
 

@@ -69,13 +69,13 @@ forgotpassword(BuildContext context) {
                     body: jsonEncode({"email": emailController.text}),
                   );
 
-                  showToast(jsonDecode(response.body)['message']);
+                  showToast(context, jsonDecode(response.body)['message']);
 
                   Navigator.pop(context);
                 } catch (e) {
-                  String errorMessage = '';
+                  String errorMessage = 'An error occurred. Please try again.';
 
-                  showToast(errorMessage);
+                  showToast(context, errorMessage);
                   Navigator.pop(context);
                 }
               }

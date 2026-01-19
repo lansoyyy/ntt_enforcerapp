@@ -333,7 +333,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           label: hasSelected ? 'Save Ticket' : 'Continue',
                           onPressed: () {
                             if (hasSelected) {
-                              showToast('Ticket saved succesfully!');
+                              showToast(context, 'Ticket saved succesfully!');
 
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
@@ -760,7 +760,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 actions: <Widget>[
                   MaterialButton(
                     onPressed: () {
-                      showToast('Ticket created succesfully!');
+                      showToast(context, 'Ticket created succesfully!');
 
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
@@ -778,7 +778,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                   ),
                   MaterialButton(
                     onPressed: () async {
-                      showToast('Ticket created succesfully!');
+                      showToast(context, 'Ticket created succesfully!');
 
                       printer.printReceipt(
                           license.text,
@@ -811,7 +811,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 ],
               ));
     } else {
-      showToast(jsonDecode(response.body)['message']);
+      showToast(context, jsonDecode(response.body)['message']);
     }
   }
 }

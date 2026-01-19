@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-Future<bool?> showToast(msg) {
-  return Fluttertoast.showToast(
-    backgroundColor: Colors.red,
-    toastLength: Toast.LENGTH_LONG,
-    msg: msg,
+void showToast(BuildContext context, String msg) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.red,
+      duration: const Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating,
+    ),
   );
 }
