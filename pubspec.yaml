@@ -40,6 +40,7 @@ dependencies:
   get_storage:
   intl:
   sunmi_printer_plus:
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

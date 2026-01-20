@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
@@ -11,6 +12,7 @@ import 'package:enforcer_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../utils/colors.dart';
 
@@ -24,6 +26,7 @@ class AddTicketScreen extends StatefulWidget {
 class _AddTicketScreenState extends State<AddTicketScreen> {
   final fname = TextEditingController();
   final lname = TextEditingController();
+  final driverDob = TextEditingController();
 
   final address = TextEditingController();
   final license = TextEditingController();
@@ -36,6 +39,51 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   final driveremail = TextEditingController();
   final phone = TextEditingController();
   final place = TextEditingController();
+
+  DateTime? _driverDob;
+
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? _vehiclePhoto;
+
+  Future<void> _pickDriverDob() async {
+    final DateTime now = DateTime.now();
+    final DateTime initialDate = _driverDob ?? DateTime(now.year - 25, 1, 1);
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isAfter(now) ? now : initialDate,
+      firstDate: DateTime(1900, 1, 1),
+      lastDate: now,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(primary: primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      _driverDob = picked;
+      driverDob.text = DateFormat('MM/dd/yyyy').format(picked);
+    });
+  }
+
+  Future<void> _takeVehiclePhoto() async {
+    final XFile? photo = await _imagePicker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
+
+    if (photo == null) return;
+
+    setState(() {
+      _vehiclePhoto = photo;
+    });
+  }
 
   List selectedViolations = [];
 
@@ -209,6 +257,75 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           return null;
                         },
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                              text: 'Date of Birth',
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 65,
+                              child: TextFormField(
+                                controller: driverDob,
+                                readOnly: true,
+                                onTap: _pickDriverDob,
+                                style: const TextStyle(
+                                  fontFamily: 'QRegular',
+                                  fontSize: 14,
+                                ),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  hintText: 'Select Date of Birth',
+                                  border: InputBorder.none,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.transparent,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.transparent,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: _pickDriverDob,
+                                    icon: const Icon(Icons.calendar_month),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select Date of Birth';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       TextFieldWidget(
                         hasValidator: false,
                         width: double.infinity,
@@ -323,6 +440,52 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         controller: owneraddress,
                         hasValidator: false,
                         label: 'Address of Owner',
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextWidget(
+                            text: 'Vehicle Photo',
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          _vehiclePhoto == null
+                              ? ButtonWidget(
+                                  width: double.infinity,
+                                  height: 50,
+                                  label: 'Take Vehicle Photo',
+                                  onPressed: _takeVehiclePhoto,
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        File(_vehiclePhoto!.path),
+                                        height: 170,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    ButtonWidget(
+                                      width: double.infinity,
+                                      height: 45,
+                                      label: 'Retake Photo',
+                                      onPressed: _takeVehiclePhoto,
+                                    ),
+                                  ],
+                                ),
+                        ],
                       ),
                       const SizedBox(
                         height: 20,
@@ -696,7 +859,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                   "address": address.text,
                                   "email": driveremail.text,
                                   "phone": phone.text,
-                                  "date_of_birth": ""
+                                  "date_of_birth": _driverDob == null
+                                      ? ""
+                                      : DateFormat('yyyy-MM-dd')
+                                          .format(_driverDob!)
                                 },
                                 "vehicle_type": vehicletype.text,
                                 "vehicle_plate": plateno.text,
