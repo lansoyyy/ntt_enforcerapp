@@ -41,6 +41,7 @@ dependencies:
   intl:
   sunmi_printer_plus:
   image_picker: ^1.0.7
+  image: ^4.1.7
 
 dev_dependencies:
   flutter_test:

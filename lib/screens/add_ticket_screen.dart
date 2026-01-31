@@ -9,6 +9,7 @@ import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:enforcer_app/widgets/toast_widget.dart';
+import 'package:enforcer_app/services/transaction_image_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -70,6 +71,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
       _driverDob = picked;
       driverDob.text = DateFormat('MM/dd/yyyy').format(picked);
     });
+  }
+
+  String _extractTicketIdFromNumber(String number) {
+    String numberString = number.substring(number.lastIndexOf('-') + 1);
+    numberString = numberString.replaceFirst(RegExp(r'^0+'), '');
+    return numberString;
   }
 
   Future<void> _takeVehiclePhoto() async {
@@ -915,6 +922,38 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      try {
+        final decoded = jsonDecode(response.body);
+        String? transactionId;
+
+        if (decoded is Map && decoded['ticket'] is Map) {
+          final ticket = decoded['ticket'] as Map;
+          if (ticket['id'] != null) {
+            transactionId = ticket['id'].toString();
+          } else if (ticket['number'] != null) {
+            transactionId =
+                _extractTicketIdFromNumber(ticket['number'].toString());
+          }
+        } else if (decoded is Map && decoded['id'] != null) {
+          transactionId = decoded['id'].toString();
+        }
+
+        if (_vehiclePhoto != null &&
+            transactionId != null &&
+            transactionId.isNotEmpty) {
+          final base64 =
+              await TransactionImageService.fileToResizedBase64DataUri(
+                  _vehiclePhoto!.path);
+          await TransactionImageService().createImage(
+            transactionId: transactionId,
+            type: 'violation',
+            base64: base64,
+          );
+        }
+      } catch (e) {
+        showToast(context, 'Failed to upload vehicle photo');
+      }
+
       showDialog(
           barrierDismissible: false,
           context: context,
