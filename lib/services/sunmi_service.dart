@@ -87,7 +87,8 @@ class SunmiService {
       List violations,
       String id,
       String total,
-      String dt) async {
+      String dt,
+      String dateOfBirth) async {
     await initialize();
 
     // await printLogoImage();
@@ -102,6 +103,10 @@ class SunmiService {
     await printRowAndColumns(
       column1: "Name:",
       column2: name,
+    );
+    await printRowAndColumns(
+      column1: "Date of Birth:",
+      column2: dateOfBirth,
     );
     await printRowAndColumns(
       column1: "Address:",

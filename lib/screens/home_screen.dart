@@ -47,6 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final vehicletype = TextEditingController();
 
+  final dob = TextEditingController();
+
   final box = GetStorage();
 
   bool hasLoaded = false;
@@ -501,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
       owneraddress.text = data['vehicle_owner_address'] ?? '';
       driveremail.text = data['driver_email'] ?? '';
       phone.text = data['driver_phone'] ?? '';
-      place.text = data['place_of_apprehension'] ?? '';
+      dob.text = data['driver_date_of_birth'] ?? '';
     });
 
     List<dynamic> transactionImages = [];
@@ -871,7 +873,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     0.0;
                                 return sum + fine;
                               })}',
-                              data['date_issued'].toString());
+                              data['date_issued'].toString(),
+                              dob.text);
                         },
                       ),
                     ),

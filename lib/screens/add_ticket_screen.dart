@@ -998,7 +998,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           total,
                           DateFormat('yyyy-MM-dd – hh:mm a')
                               .format(DateTime.now())
-                              .toString());
+                              .toString(),
+                          driverDob.text);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
