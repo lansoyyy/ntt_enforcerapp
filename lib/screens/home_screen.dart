@@ -49,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final dob = TextEditingController();
 
+  String? ticketQrCode;
+
   final box = GetStorage();
 
   bool hasLoaded = false;
@@ -458,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getLicense(String id) async {
     final token = box.read('token');
 
-    final url = Uri.parse('${ApiEndpoints.baseUrl}/tickets/$id');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}tickets/$id');
 
     final response = await http.get(
       url,
@@ -473,6 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         license.text = data['ticket']['driver']['license_number'];
+        ticketQrCode = data['ticket']['qr_code']?.toString();
       });
     } else {
       print('Failed to retrieve user data: ${response.statusCode}');
@@ -874,7 +877,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return sum + fine;
                               })}',
                               data['date_issued'].toString(),
-                              dob.text);
+                              dob.text,
+                              qrCodeSvg: ticketQrCode);
                         },
                       ),
                     ),

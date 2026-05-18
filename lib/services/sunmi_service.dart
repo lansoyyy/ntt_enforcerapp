@@ -1,5 +1,6 @@
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'dart:typed_data';
+
+import 'package:enforcer_app/utils/qr_code_util.dart';
 import 'package:sunmi_printer_plus/column_maker.dart';
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
@@ -42,14 +43,17 @@ class SunmiService {
         ));
   }
 
-  // // print text as qrcode
-  // Future<void> printQRCode(String text) async {
-  //   // set alignment center
-  //   await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-  //   await SunmiPrinter.lineWrap(1); // creates one line space
-  //   await SunmiPrinter.printQRCode(text);
-  //   await SunmiPrinter.lineWrap(4); // creates one line space
-  // }
+  Future<void> printQrCodeSvg(String? qrCodeSvg) async {
+    if (qrCodeSvg == null || qrCodeSvg.trim().isEmpty) return;
+
+    final Uint8List? bytes = await QrCodeUtil.svgToPngBytes(qrCodeSvg);
+    if (bytes == null) return;
+
+    await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+    await SunmiPrinter.lineWrap(1);
+    await SunmiPrinter.printImage(bytes);
+    await SunmiPrinter.lineWrap(2);
+  }
 
   // print row and 2 columns
   Future<void> printRowAndColumns({
@@ -88,7 +92,8 @@ class SunmiService {
       String id,
       String total,
       String dt,
-      String dateOfBirth) async {
+      String dateOfBirth,
+      {String? qrCodeSvg}) async {
     await initialize();
 
     // await printLogoImage();
@@ -154,14 +159,7 @@ class SunmiService {
       ),
     ]);
 
-    await printRowAndColumns(
-      column1: "",
-      column2: '',
-    );
-    await printRowAndColumns(
-      column1: "",
-      column2: '',
-    );
+    await printQrCodeSvg(qrCodeSvg);
 
     await SunmiPrinter.cut();
 

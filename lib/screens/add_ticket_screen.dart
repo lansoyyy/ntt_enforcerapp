@@ -922,12 +922,15 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      final decoded = jsonDecode(response.body);
+      String? qrCodeSvg;
+
       try {
-        final decoded = jsonDecode(response.body);
         String? transactionId;
 
         if (decoded is Map && decoded['ticket'] is Map) {
           final ticket = decoded['ticket'] as Map;
+          qrCodeSvg = ticket['qr_code']?.toString();
           if (ticket['id'] != null) {
             transactionId = ticket['id'].toString();
           } else if (ticket['number'] != null) {
@@ -994,12 +997,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           owner.text,
                           owneraddress.text,
                           finalViolations,
-                          jsonDecode(response.body)['ticket']['number'],
+                          decoded['ticket']['number'],
                           total,
                           DateFormat('yyyy-MM-dd – hh:mm a')
                               .format(DateTime.now())
                               .toString(),
-                          driverDob.text);
+                          driverDob.text,
+                          qrCodeSvg: qrCodeSvg);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
