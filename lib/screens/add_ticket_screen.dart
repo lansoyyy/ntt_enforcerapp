@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
+import 'package:enforcer_app/services/app_lock_controller.dart';
 import 'package:enforcer_app/services/sunmi_service.dart';
 import 'package:enforcer_app/utils/violation_data.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
@@ -80,10 +81,17 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   }
 
   Future<void> _takeVehiclePhoto() async {
-    final XFile? photo = await _imagePicker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 85,
-    );
+    AppLockController.instance.suppressNextLock();
+
+    XFile? photo;
+    try {
+      photo = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+      );
+    } finally {
+      AppLockController.instance.releaseLockSuppression();
+    }
 
     if (photo == null) return;
 

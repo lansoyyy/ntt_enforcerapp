@@ -6,6 +6,7 @@ import 'package:enforcer_app/screens/add_ticket_screen.dart';
 import 'package:enforcer_app/screens/auth/login_screen.dart';
 import 'package:enforcer_app/screens/notif_screen.dart';
 import 'package:enforcer_app/screens/profile_screen.dart';
+import 'package:enforcer_app/services/app_lock_controller.dart';
 import 'package:enforcer_app/services/transaction_image_service.dart';
 import 'package:enforcer_app/utils/colors.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
@@ -557,10 +558,17 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           Future<void> replacePhoto() async {
-            final XFile? photo = await _imagePicker.pickImage(
-              source: ImageSource.camera,
-              imageQuality: 85,
-            );
+            AppLockController.instance.suppressNextLock();
+
+            XFile? photo;
+            try {
+              photo = await _imagePicker.pickImage(
+                source: ImageSource.camera,
+                imageQuality: 85,
+              );
+            } finally {
+              AppLockController.instance.releaseLockSuppression();
+            }
 
             if (photo == null) return;
 

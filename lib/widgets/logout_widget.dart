@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 logout(BuildContext context, Widget navigationRoute) {
   return showDialog(
@@ -24,6 +25,12 @@ logout(BuildContext context, Widget navigationRoute) {
               ),
               MaterialButton(
                 onPressed: () async {
+                  final box = GetStorage();
+                  box.remove('token');
+                  box.remove('id');
+                  box.remove('name');
+                  box.remove('location');
+
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => navigationRoute),
                     (route) {

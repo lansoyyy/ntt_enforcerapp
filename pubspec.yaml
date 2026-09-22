@@ -43,6 +43,9 @@ dependencies:
   image_picker: ^1.0.7
   image: ^4.1.7
   flutter_svg: ^2.2.3
+  local_auth: 2.3.0
+  local_auth_android: 1.0.52
+  local_auth_darwin: 1.6.0
 
 dev_dependencies:
   flutter_test:
