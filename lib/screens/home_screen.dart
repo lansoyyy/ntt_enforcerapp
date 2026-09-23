@@ -886,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               })}',
                               data['date_issued'].toString(),
                               dob.text,
-                              qrCodeSvg: ticketQrCode);
+                              qrCode: ticketQrCode);
                         },
                       ),
                     ),

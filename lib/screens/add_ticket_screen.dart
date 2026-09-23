@@ -915,6 +915,31 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   SunmiService printer = SunmiService();
   final box = GetStorage();
 
+  Future<String?> _fetchTicketQrCode(String id) async {
+    try {
+      final token = box.read('token');
+      final url = Uri.parse('${ApiEndpoints.baseUrl}tickets/$id');
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data['ticket'] is Map) {
+          final value = (data['ticket'] as Map)['qr_code']?.toString();
+          if (value != null && value.isNotEmpty) return value;
+        }
+      }
+    } catch (_) {}
+
+    return null;
+  }
+
   Future<void> addTicket(dynamic body, String total) async {
     final token = box.read('token');
     final url = Uri.parse('${ApiEndpoints.baseUrl}tickets');
@@ -931,14 +956,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final decoded = jsonDecode(response.body);
-      String? qrCodeSvg;
+      String? qrCode;
 
       try {
         String? transactionId;
 
         if (decoded is Map && decoded['ticket'] is Map) {
           final ticket = decoded['ticket'] as Map;
-          qrCodeSvg = ticket['qr_code']?.toString();
+          qrCode = ticket['qr_code']?.toString();
           if (ticket['id'] != null) {
             transactionId = ticket['id'].toString();
           } else if (ticket['number'] != null) {
@@ -947,6 +972,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           }
         } else if (decoded is Map && decoded['id'] != null) {
           transactionId = decoded['id'].toString();
+        }
+
+        if ((qrCode == null || qrCode.isEmpty) &&
+            transactionId != null &&
+            transactionId.isNotEmpty) {
+          qrCode = await _fetchTicketQrCode(transactionId);
         }
 
         if (_vehiclePhoto != null &&
@@ -1011,7 +1042,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               .format(DateTime.now())
                               .toString(),
                           driverDob.text,
-                          qrCodeSvg: qrCodeSvg);
+                          qrCode: qrCode);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),

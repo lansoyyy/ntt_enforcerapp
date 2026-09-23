@@ -43,10 +43,10 @@ class SunmiService {
         ));
   }
 
-  Future<void> printQrCodeSvg(String? qrCodeSvg) async {
-    if (qrCodeSvg == null || qrCodeSvg.trim().isEmpty) return;
+  Future<void> printQrCode(String? qrCode) async {
+    if (qrCode == null || qrCode.trim().isEmpty) return;
 
-    final Uint8List? bytes = await QrCodeUtil.svgToPngBytes(qrCodeSvg);
+    final Uint8List? bytes = await QrCodeUtil.qrPayloadToPngBytes(qrCode);
     if (bytes == null) return;
 
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
@@ -93,7 +93,7 @@ class SunmiService {
       String total,
       String dt,
       String dateOfBirth,
-      {String? qrCodeSvg}) async {
+      {String? qrCode}) async {
     await initialize();
 
     // await printLogoImage();
@@ -159,7 +159,7 @@ class SunmiService {
       ),
     ]);
 
-    await printQrCodeSvg(qrCodeSvg);
+    await printQrCode(qrCode);
 
     await SunmiPrinter.cut();
 
