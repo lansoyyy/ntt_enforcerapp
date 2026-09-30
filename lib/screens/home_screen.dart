@@ -12,6 +12,7 @@ import 'package:enforcer_app/utils/colors.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/date_picker_widget.dart';
 import 'package:enforcer_app/widgets/logout_widget.dart';
+import 'package:enforcer_app/widgets/restriction_dialog.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:enforcer_app/widgets/toast_widget.dart';
@@ -130,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primary,
-        onPressed: () {
+        onPressed: () async {
+          final allowed = await ensureWithinEnforcementRestriction(context);
+          if (!mounted || !allowed) return;
+
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const AddTicketScreen()),
           );

@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/services/app_lock_controller.dart';
+import 'package:enforcer_app/services/restriction_service.dart';
 import 'package:enforcer_app/services/sunmi_service.dart';
 import 'package:enforcer_app/utils/violation_data.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
+import 'package:enforcer_app/widgets/restriction_dialog.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
 import 'package:enforcer_app/widgets/toast_widget.dart';
@@ -202,6 +204,64 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 15),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amber[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.amber[200]!),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.schedule,
+                                  size: 16,
+                                  color: Colors.orange,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Enforcement hours: '
+                                    '${sampleRestriction.scheduleLabel} '
+                                    '(${sampleRestriction.weekdayLabel})',
+                                    style: const TextStyle(
+                                      fontFamily: 'QRegular',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 16,
+                                  color: Colors.orange,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Assigned area: '
+                                    '${sampleRestriction.area.name} '
+                                    '(${sampleRestriction.radiusLabel} radius)',
+                                    style: const TextStyle(
+                                      fontFamily: 'QRegular',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       const Center(
                         child: Text(
                           'DRIVER INFORMATION',
@@ -854,6 +914,11 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       ),
                       MaterialButton(
                         onPressed: () async {
+                          final allowed =
+                              await ensureWithinEnforcementRestriction(
+                                  context);
+                          if (!allowed) return;
+
                           for (int i = 0; i < newViolations.length; i++) {
                             finalViolations.add(jsonDecode(newViolations[i]));
                           }

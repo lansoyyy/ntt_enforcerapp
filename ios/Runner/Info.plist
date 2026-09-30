@@ -53,5 +53,7 @@
 	<string>This app needs access to save the vehicle photo.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID to confirm your identity before granting access.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to verify that you are within your assigned enforcement area.</string>
 </dict>
 </plist>
