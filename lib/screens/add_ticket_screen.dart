@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:enforcer_app/models/enforcer_restriction.dart';
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/services/app_lock_controller.dart';
@@ -113,6 +114,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   final searchController = TextEditingController();
   String nameSearched = '';
 
+  EnforcerRestriction _restriction = sampleRestriction;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -122,6 +125,16 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     getBrgys();
 
     getViolations();
+
+    _loadRestriction();
+  }
+
+  Future<void> _loadRestriction() async {
+    final restriction = await RestrictionService().resolveRestriction();
+    if (!mounted) return;
+    setState(() {
+      _restriction = restriction;
+    });
   }
 
   bool hasLoaded = false;
@@ -227,8 +240,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 Expanded(
                                   child: Text(
                                     'Enforcement hours: '
-                                    '${sampleRestriction.scheduleLabel} '
-                                    '(${sampleRestriction.weekdayLabel})',
+                                    '${_restriction.scheduleLabel} '
+                                    '(${_restriction.weekdayLabel})',
                                     style: const TextStyle(
                                       fontFamily: 'QRegular',
                                       fontSize: 12,
@@ -249,8 +262,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 Expanded(
                                   child: Text(
                                     'Assigned area: '
-                                    '${sampleRestriction.area.name} '
-                                    '(${sampleRestriction.radiusLabel} radius)',
+                                    '${_restriction.area.name} '
+                                    '(${_restriction.radiusLabel} radius)',
                                     style: const TextStyle(
                                       fontFamily: 'QRegular',
                                       fontSize: 12,
@@ -914,10 +927,11 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       ),
                       MaterialButton(
                         onPressed: () async {
-                          final allowed =
-                              await ensureWithinEnforcementRestriction(
-                                  context);
-                          if (!allowed) return;
+                          final check =
+                              await runEnforcementRestrictionCheck(context);
+                          if (check == null || !check.isAllowed) return;
+
+                          final position = check.position;
 
                           for (int i = 0; i < newViolations.length; i++) {
                             finalViolations.add(jsonDecode(newViolations[i]));
@@ -951,7 +965,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 "verified_license": false,
                                 "verified_plate": false,
                                 "violations": finalViolations,
-                                "remarks": ""
+                                "remarks": "",
+                                "latitude": position?.latitude,
+                                "longitude": position?.longitude
                               }),
                               '$total');
                           setState(() {

@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 /// Checks the enforcer's time and area restrictions while showing a progress
 /// dialog, then a message dialog when the check fails.
 ///
-/// Returns `true` when the enforcer is allowed to continue.
-Future<bool> ensureWithinEnforcementRestriction(BuildContext context) async {
+/// Returns the [RestrictionCheckResult] (which includes the position captured
+/// during the check) or `null` when the result could not be determined.
+Future<RestrictionCheckResult?> runEnforcementRestrictionCheck(
+  BuildContext context,
+) async {
   final navigator = Navigator.of(context, rootNavigator: true);
 
   showDialog(
@@ -33,47 +36,58 @@ Future<bool> ensureWithinEnforcementRestriction(BuildContext context) async {
     ),
   );
 
-  RestrictionCheckResult result;
+  RestrictionCheckResult? result;
   try {
     result = await RestrictionService().check();
+  } catch (_) {
+    result = null;
   } finally {
     if (navigator.mounted && navigator.canPop()) {
       navigator.pop();
     }
   }
 
-  if (result.isAllowed) return true;
+  if (result == null || !context.mounted) return result;
 
-  if (!context.mounted) return false;
+  final checkResult = result;
 
-  await showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(
-        result.title,
-        style: const TextStyle(
-          fontFamily: 'QBold',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: Text(
-        result.message,
-        style: const TextStyle(fontFamily: 'QRegular'),
-      ),
-      actions: <Widget>[
-        MaterialButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text(
-            'OK',
-            style: TextStyle(
-              fontFamily: 'QRegular',
-              fontWeight: FontWeight.bold,
-            ),
+  if (!checkResult.isAllowed) {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          checkResult.title,
+          style: const TextStyle(
+            fontFamily: 'QBold',
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ],
-    ),
-  );
+        content: Text(
+          checkResult.message,
+          style: const TextStyle(fontFamily: 'QRegular'),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                fontFamily: 'QRegular',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  return false;
+  return result;
+}
+
+/// Convenience wrapper for callers that only need to know if the enforcer may
+/// continue.
+Future<bool> ensureWithinEnforcementRestriction(BuildContext context) async {
+  final result = await runEnforcementRestrictionCheck(context);
+  return result?.isAllowed ?? false;
 }

@@ -80,6 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
       box.write('id', data['id']);
       box.write('name', '${data['first_name']} ${data['last_name']}');
       box.write('location', data['lgu']['name']);
+      box.write('lgu_id', data['lgu']['id']);
+      if (data['location_id'] != null) {
+        box.write('location_id', data['location_id']);
+      } else {
+        box.remove('location_id');
+      }
 
       setState(() {
         enforcerData = data;

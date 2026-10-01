@@ -86,6 +86,38 @@ void main() {
     });
   });
 
+  group('EnforcerLocation.fromJson', () {
+    test('parses string coordinates returned by the API', () {
+      final location = EnforcerLocation.fromJson({
+        'id': 1,
+        'name': 'QA Test Spot',
+        'latitude': '17.6056826',
+        'longitude': '121.7123044',
+      });
+
+      expect(location.id, 1);
+      expect(location.name, 'QA Test Spot');
+      expect(location.latitude, closeTo(17.6056826, 0.0000001));
+      expect(location.longitude, closeTo(121.7123044, 0.0000001));
+    });
+
+    test('round trips through toJson', () {
+      const location = EnforcerLocation(
+        id: 2,
+        name: 'Robinsons Rontonda',
+        latitude: 17.6267935,
+        longitude: 121.7324638,
+      );
+
+      final parsed = EnforcerLocation.fromJson(location.toJson());
+
+      expect(parsed.id, 2);
+      expect(parsed.name, 'Robinsons Rontonda');
+      expect(parsed.latitude, 17.6267935);
+      expect(parsed.longitude, 121.7324638);
+    });
+  });
+
   group('EnforcerRestriction distance', () {
     test('is zero at the area center', () {
       final restriction = _restriction();
@@ -108,6 +140,15 @@ void main() {
 
       expect(restriction.isWithinArea(17.6132, 121.7270), isTrue);
       expect(restriction.isWithinArea(17.6132, 121.7370), isFalse);
+    });
+  });
+
+  group('RestrictionService.resolveRestriction', () {
+    test('uses the provided restriction without hitting the API', () async {
+      final restriction = _restriction();
+      final service = RestrictionService(restriction: restriction);
+
+      expect(await service.resolveRestriction(), same(restriction));
     });
   });
 

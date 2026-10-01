@@ -1,27 +1,21 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:enforcer_app/models/enforcer_restriction.dart';
+import 'package:enforcer_app/network/endpoints.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 
-/// Hardcoded sample used until the backend API exposes the real per-enforcer
-/// restrictions.
+/// Radius used for the assigned area check until the backend exposes it.
+const double defaultRadiusMeters = 2000;
+
+/// Fallback schedule/area used when the API has no restriction data yet.
 ///
-/// TODO(api): replace [sampleRestriction] with data returned by the API. The
-/// expected shape (subject to backend confirmation) is something like:
-/// {
-///   "schedule": {
-///     "start": "08:00",
-///     "end": "17:00",
-///     "days": [1, 2, 3, 4, 5, 6]
-///   },
-///   "area": {
-///     "name": "Tuguegarao City",
-///     "latitude": 17.6132,
-///     "longitude": 121.7270,
-///     "radius_meters": 1500
-///   }
-/// }
+/// The schedule is hardcoded for now; the area center is replaced by the
+/// enforcer's assigned location from `GET /lgus/{lguId}/locations` whenever
+/// it is available.
 const EnforcerRestriction sampleRestriction = EnforcerRestriction(
   startTime: TimeOfDay(hour: 8, minute: 0),
   endTime: TimeOfDay(hour: 17, minute: 0),
@@ -37,7 +31,7 @@ const EnforcerRestriction sampleRestriction = EnforcerRestriction(
     name: 'Tuguegarao City',
     latitude: 17.6132,
     longitude: 121.7270,
-    radiusMeters: 1500,
+    radiusMeters: defaultRadiusMeters,
   ),
 );
 
@@ -136,15 +130,53 @@ class RestrictionService {
     EnforcerRestriction? restriction,
     LocationResolver? locationResolver,
     DateTime Function()? clock,
-  })  : restriction = restriction ?? sampleRestriction,
+  })  : _providedRestriction = restriction,
         _locationResolver = locationResolver ?? _resolveLocationFromDevice,
         _clock = clock ?? DateTime.now;
 
-  final EnforcerRestriction restriction;
+  static const String _assignedAreaKey = 'assigned_area';
+
+  final EnforcerRestriction? _providedRestriction;
   final LocationResolver _locationResolver;
   final DateTime Function() _clock;
 
+  /// Resolves the enforcer's restriction.
+  ///
+  /// When a restriction was explicitly provided (e.g. in tests) it is used
+  /// as-is. Otherwise the assigned location is loaded from the API
+  /// (`GET /lgus/{lguId}/locations` matched by `location_id` from `/me`),
+  /// falling back to the last cached area and finally to [sampleRestriction].
+  Future<EnforcerRestriction> resolveRestriction() async {
+    final provided = _providedRestriction;
+    if (provided != null) return provided;
+
+    try {
+      final box = GetStorage();
+      final lguId = box.read('lgu_id');
+      final locationId = box.read('location_id');
+
+      if (lguId != null) {
+        final locations = await _fetchLocations('$lguId');
+        final location = _matchLocation(locations, locationId);
+
+        if (location != null) {
+          box.write(_assignedAreaKey, jsonEncode(location.toJson()));
+          return _restrictionWithArea(location);
+        }
+      }
+    } catch (_) {
+      // Fall through to the cached/sample restriction below.
+    }
+
+    final cached = _readCachedArea();
+    if (cached != null) return _restrictionWithArea(cached);
+
+    return sampleRestriction;
+  }
+
   Future<RestrictionCheckResult> check() async {
+    final restriction = await resolveRestriction();
+
     if (!restriction.isWithinTime(_clock())) {
       return RestrictionCheckResult(
         status: RestrictionStatus.outsideSchedule,
@@ -182,6 +214,74 @@ class RestrictionService {
       position: position,
       distanceMeters: distance,
     );
+  }
+
+  EnforcerLocation? _matchLocation(
+    List<EnforcerLocation> locations,
+    Object? locationId,
+  ) {
+    if (locations.isEmpty) return null;
+
+    if (locationId == null) {
+      return locations.length == 1 ? locations.first : null;
+    }
+
+    for (final location in locations) {
+      if (location.id.toString() == locationId.toString()) return location;
+    }
+
+    return null;
+  }
+
+  EnforcerRestriction _restrictionWithArea(EnforcerLocation location) {
+    return EnforcerRestriction(
+      startTime: sampleRestriction.startTime,
+      endTime: sampleRestriction.endTime,
+      allowedWeekdays: sampleRestriction.allowedWeekdays,
+      area: EnforcementArea(
+        name: location.name,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        radiusMeters: defaultRadiusMeters,
+      ),
+    );
+  }
+
+  EnforcerLocation? _readCachedArea() {
+    try {
+      final raw = GetStorage().read(_assignedAreaKey);
+      if (raw is String && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) {
+          return EnforcerLocation.fromJson(Map<String, dynamic>.from(decoded));
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<List<EnforcerLocation>> _fetchLocations(String lguId) async {
+    final token = GetStorage().read('token');
+    final url = Uri.parse('${ApiEndpoints.baseUrl}lgus/$lguId/locations');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) return [];
+
+    final decoded = jsonDecode(response.body);
+    final list = decoded is Map ? decoded['data'] : decoded;
+    if (list is! List) return [];
+
+    return list
+        .whereType<Map>()
+        .map((item) => EnforcerLocation.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   static Future<LocationResolution> _resolveLocationFromDevice() async {
