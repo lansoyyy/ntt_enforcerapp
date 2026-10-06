@@ -930,6 +930,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           final check =
                               await runEnforcementRestrictionCheck(context);
                           if (check == null || !check.isAllowed) return;
+                          if (!context.mounted) return;
 
                           final position = check.position;
 

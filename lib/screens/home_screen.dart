@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -7,6 +8,7 @@ import 'package:enforcer_app/screens/auth/login_screen.dart';
 import 'package:enforcer_app/screens/notif_screen.dart';
 import 'package:enforcer_app/screens/profile_screen.dart';
 import 'package:enforcer_app/services/app_lock_controller.dart';
+import 'package:enforcer_app/services/restriction_service.dart';
 import 'package:enforcer_app/services/transaction_image_service.dart';
 import 'package:enforcer_app/utils/colors.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
@@ -32,7 +34,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   DateTime selectedDate = DateTime.now();
 
   final ImagePicker _imagePicker = ImagePicker();
@@ -123,30 +125,171 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  RestrictionCheckResult? _restrictionCheck;
+  bool _checkingRestriction = false;
+  Timer? _restrictionTimer;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     getUserData();
     getTicket();
+    _refreshRestrictionStatus();
+    _restrictionTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      _refreshRestrictionStatus();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _restrictionTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshRestrictionStatus();
+    }
+  }
+
+  Future<void> _refreshRestrictionStatus({bool requestPermission = false}) async {
+    if (_checkingRestriction) return;
+
+    setState(() {
+      _checkingRestriction = true;
+    });
+
+    final result = await RestrictionService(
+      requestPermission: requestPermission,
+    ).check();
+
+    if (!mounted) return;
+
+    setState(() {
+      _restrictionCheck = result;
+      _checkingRestriction = false;
+    });
+  }
+
+  Widget _buildRestrictionBanner() {
+    final check = _restrictionCheck;
+
+    final Color background;
+    final Color border;
+    final IconData icon;
+
+    if (check == null || _checkingRestriction) {
+      background = Colors.grey[100]!;
+      border = Colors.grey[300]!;
+      icon = Icons.location_searching;
+    } else if (check.isAllowed) {
+      background = Colors.green[50]!;
+      border = Colors.green[200]!;
+      icon = Icons.location_on;
+    } else {
+      background = Colors.red[50]!;
+      border = Colors.red[200]!;
+      icon = Icons.location_off;
+    }
+
+    final String text;
+    if (check == null) {
+      text = 'Verifying your assigned area...';
+    } else if (check.isAllowed) {
+      text = 'Within assigned area: ${check.restriction.area.name}';
+    } else {
+      text = check.message;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      child: InkWell(
+        onTap: _checkingRestriction
+            ? null
+            : () async {
+                final result = await runEnforcementRestrictionCheck(context);
+                if (!mounted) return;
+                setState(() {
+                  _restrictionCheck = result;
+                });
+              },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: background,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: border),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: check?.isAllowed == true ? Colors.green : Colors.grey[700],
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  text,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'QRegular',
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              if (_checkingRestriction)
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                Icon(
+                  Icons.refresh,
+                  size: 18,
+                  color: Colors.grey[700],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   SunmiService printer = SunmiService();
 
   @override
   Widget build(BuildContext context) {
+    final canCreateTicket = _restrictionCheck?.isAllowed ?? false;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        backgroundColor: primary,
-        onPressed: () async {
-          final allowed = await ensureWithinEnforcementRestriction(context);
-          if (!mounted || !allowed) return;
+        backgroundColor: canCreateTicket ? primary : Colors.grey,
+        onPressed: canCreateTicket
+            ? () async {
+                final allowed =
+                    await ensureWithinEnforcementRestriction(context);
+                if (!context.mounted) return;
 
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddTicketScreen()),
-          );
-        },
-        child: const Icon(
-          Icons.add,
+                if (!allowed) {
+                  _refreshRestrictionStatus();
+                  return;
+                }
+
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const AddTicketScreen()),
+                );
+              }
+            : null,
+        child: Icon(
+          canCreateTicket ? Icons.add : Icons.lock_outline,
           color: Colors.white,
         ),
       ),
@@ -229,6 +372,10 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           )
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: _buildRestrictionBanner(),
+        ),
       ),
       body: hasLoaded
           ? Padding(

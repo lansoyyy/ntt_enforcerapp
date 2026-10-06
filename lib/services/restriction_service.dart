@@ -53,7 +53,9 @@ class LocationResolution {
   final RestrictionStatus? status;
 }
 
-typedef LocationResolver = Future<LocationResolution> Function();
+typedef LocationResolver = Future<LocationResolution> Function({
+  required bool requestPermission,
+});
 
 class RestrictionCheckResult {
   const RestrictionCheckResult({
@@ -130,15 +132,30 @@ class RestrictionService {
     EnforcerRestriction? restriction,
     LocationResolver? locationResolver,
     DateTime Function()? clock,
+    bool requestPermission = true,
   })  : _providedRestriction = restriction,
         _locationResolver = locationResolver ?? _resolveLocationFromDevice,
-        _clock = clock ?? DateTime.now;
+        _clock = clock ?? DateTime.now,
+        _requestPermission = requestPermission;
 
   static const String _assignedAreaKey = 'assigned_area';
+  static const Duration _memoryCacheTtl = Duration(minutes: 5);
+
+  static EnforcerRestriction? _memoryCache;
+  static String? _memoryCacheKey;
+  static DateTime? _memoryCacheAt;
 
   final EnforcerRestriction? _providedRestriction;
   final LocationResolver _locationResolver;
   final DateTime Function() _clock;
+  final bool _requestPermission;
+
+  /// Clears the in-memory restriction cache (e.g. on logout).
+  static void clearCache() {
+    _memoryCache = null;
+    _memoryCacheKey = null;
+    _memoryCacheAt = null;
+  }
 
   /// Resolves the enforcer's restriction.
   ///
@@ -150,8 +167,17 @@ class RestrictionService {
     final provided = _providedRestriction;
     if (provided != null) return provided;
 
+    final box = GetStorage();
+    final cacheKey = '${box.read('lgu_id')}-${box.read('location_id')}';
+
+    if (_memoryCache != null &&
+        _memoryCacheKey == cacheKey &&
+        _memoryCacheAt != null &&
+        DateTime.now().difference(_memoryCacheAt!) < _memoryCacheTtl) {
+      return _memoryCache!;
+    }
+
     try {
-      final box = GetStorage();
       final lguId = box.read('lgu_id');
       final locationId = box.read('location_id');
 
@@ -161,7 +187,7 @@ class RestrictionService {
 
         if (location != null) {
           box.write(_assignedAreaKey, jsonEncode(location.toJson()));
-          return _restrictionWithArea(location);
+          return _cache(_restrictionWithArea(location), cacheKey);
         }
       }
     } catch (_) {
@@ -169,9 +195,16 @@ class RestrictionService {
     }
 
     final cached = _readCachedArea();
-    if (cached != null) return _restrictionWithArea(cached);
+    if (cached != null) return _cache(_restrictionWithArea(cached), cacheKey);
 
     return sampleRestriction;
+  }
+
+  EnforcerRestriction _cache(EnforcerRestriction restriction, String key) {
+    _memoryCache = restriction;
+    _memoryCacheKey = key;
+    _memoryCacheAt = DateTime.now();
+    return restriction;
   }
 
   Future<RestrictionCheckResult> check() async {
@@ -184,7 +217,9 @@ class RestrictionService {
       );
     }
 
-    final resolution = await _locationResolver();
+    final resolution = await _locationResolver(
+      requestPermission: _requestPermission,
+    );
     final position = resolution.position;
 
     if (position == null) {
@@ -284,7 +319,9 @@ class RestrictionService {
         .toList();
   }
 
-  static Future<LocationResolution> _resolveLocationFromDevice() async {
+  static Future<LocationResolution> _resolveLocationFromDevice({
+    required bool requestPermission,
+  }) async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -295,6 +332,11 @@ class RestrictionService {
 
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (!requestPermission) {
+          return const LocationResolution.failure(
+            RestrictionStatus.locationPermissionDenied,
+          );
+        }
         permission = await Geolocator.requestPermission();
       }
 

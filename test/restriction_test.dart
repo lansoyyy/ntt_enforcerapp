@@ -158,7 +158,7 @@ void main() {
       final service = RestrictionService(
         restriction: _restriction(),
         clock: () => DateTime(2026, 10, 4, 10, 0), // Sunday.
-        locationResolver: () async {
+        locationResolver: ({required bool requestPermission}) async {
           resolverCalled = true;
           return const LocationResolution.failure(
             RestrictionStatus.locationUnavailable,
@@ -176,7 +176,7 @@ void main() {
       final service = RestrictionService(
         restriction: _restriction(),
         clock: () => DateTime(2026, 9, 28, 10, 0),
-        locationResolver: () async =>
+        locationResolver: ({required bool requestPermission}) async =>
             LocationResolution.success(_position(17.6132, 121.7270)),
       );
 
@@ -190,7 +190,7 @@ void main() {
       final service = RestrictionService(
         restriction: _restriction(radius: 500),
         clock: () => DateTime(2026, 9, 28, 10, 0),
-        locationResolver: () async =>
+        locationResolver: ({required bool requestPermission}) async =>
             LocationResolution.success(_position(17.6132, 121.7370)),
       );
 
@@ -205,7 +205,8 @@ void main() {
       final service = RestrictionService(
         restriction: _restriction(),
         clock: () => DateTime(2026, 9, 28, 10, 0),
-        locationResolver: () async => const LocationResolution.failure(
+        locationResolver: ({required bool requestPermission}) async =>
+            const LocationResolution.failure(
           RestrictionStatus.locationServiceDisabled,
         ),
       );
@@ -213,6 +214,24 @@ void main() {
       final result = await service.check();
 
       expect(result.status, RestrictionStatus.locationServiceDisabled);
+    });
+
+    test('passes requestPermission through to the resolver', () async {
+      bool? receivedRequestPermission;
+
+      final service = RestrictionService(
+        restriction: _restriction(),
+        requestPermission: false,
+        clock: () => DateTime(2026, 9, 28, 10, 0),
+        locationResolver: ({required bool requestPermission}) async {
+          receivedRequestPermission = requestPermission;
+          return LocationResolution.success(_position(17.6132, 121.7270));
+        },
+      );
+
+      await service.check();
+
+      expect(receivedRequestPermission, isFalse);
     });
   });
 }

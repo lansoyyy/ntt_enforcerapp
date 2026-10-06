@@ -1,3 +1,4 @@
+import 'package:enforcer_app/services/restriction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -30,6 +31,9 @@ logout(BuildContext context, Widget navigationRoute) {
                   box.remove('id');
                   box.remove('name');
                   box.remove('location');
+                  box.remove('lgu_id');
+                  box.remove('location_id');
+                  RestrictionService.clearCache();
 
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => navigationRoute),

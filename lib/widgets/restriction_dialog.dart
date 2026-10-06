@@ -47,7 +47,7 @@ Future<RestrictionCheckResult?> runEnforcementRestrictionCheck(
     }
   }
 
-  if (result == null || !context.mounted) return result;
+  if (result == null || !context.mounted) return null;
 
   final checkResult = result;
 
