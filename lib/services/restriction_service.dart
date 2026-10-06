@@ -19,14 +19,6 @@ const double defaultRadiusMeters = 2000;
 const EnforcerRestriction sampleRestriction = EnforcerRestriction(
   startTime: TimeOfDay(hour: 8, minute: 0),
   endTime: TimeOfDay(hour: 17, minute: 0),
-  allowedWeekdays: {
-    DateTime.monday,
-    DateTime.tuesday,
-    DateTime.wednesday,
-    DateTime.thursday,
-    DateTime.friday,
-    DateTime.saturday,
-  },
   area: EnforcementArea(
     name: 'Tuguegarao City',
     latitude: 17.6132,
@@ -96,8 +88,8 @@ class RestrictionCheckResult {
       case RestrictionStatus.allowed:
         return 'You are within your enforcement schedule and assigned area.';
       case RestrictionStatus.outsideSchedule:
-        return 'Tickets can only be issued on ${restriction.weekdayLabel} '
-            'between ${restriction.scheduleLabel}.';
+        return 'Tickets can only be issued between '
+            '${restriction.scheduleLabel}.';
       case RestrictionStatus.outsideArea:
         return 'You are currently $distanceLabel away from '
             '${restriction.area.name}. You must be within '
@@ -139,6 +131,8 @@ class RestrictionService {
         _requestPermission = requestPermission;
 
   static const String _assignedAreaKey = 'assigned_area';
+  static const String _userLocationKey = 'user_location';
+  static const String _userScheduleKey = 'user_schedule';
   static const Duration _memoryCacheTtl = Duration(minutes: 5);
 
   static EnforcerRestriction? _memoryCache;
@@ -177,6 +171,21 @@ class RestrictionService {
       return _memoryCache!;
     }
 
+    final schedule = _readStoredMap(box, _userScheduleKey);
+
+    // 1. Prefer the location and schedule embedded in the user data.
+    final userLocation = _readStoredMap(box, _userLocationKey);
+    if (userLocation != null) {
+      final location = EnforcerLocation.fromJson(userLocation);
+      if (location.latitude != 0 || location.longitude != 0) {
+        return _cache(
+          _restrictionWithArea(location, schedule),
+          cacheKey,
+        );
+      }
+    }
+
+    // 2. Fall back to the LGU locations endpoint.
     try {
       final lguId = box.read('lgu_id');
       final locationId = box.read('location_id');
@@ -198,6 +207,17 @@ class RestrictionService {
     if (cached != null) return _cache(_restrictionWithArea(cached), cacheKey);
 
     return sampleRestriction;
+  }
+
+  Map<String, dynamic>? _readStoredMap(GetStorage box, String key) {
+    try {
+      final raw = box.read(key);
+      if (raw is String && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      }
+    } catch (_) {}
+    return null;
   }
 
   EnforcerRestriction _cache(EnforcerRestriction restriction, String key) {
@@ -268,16 +288,31 @@ class RestrictionService {
     return null;
   }
 
-  EnforcerRestriction _restrictionWithArea(EnforcerLocation location) {
+  EnforcerRestriction _restrictionWithArea(
+    EnforcerLocation location, [
+    Map<String, dynamic>? schedule,
+  ]) {
+    TimeOfDay? startTime;
+    TimeOfDay? endTime;
+
+    if (schedule != null && schedule['is_active'] != false) {
+      startTime =
+          EnforcerRestriction.parseTime(schedule['start_time']?.toString());
+      endTime = EnforcerRestriction.parseTime(schedule['end_time']?.toString());
+      if (startTime == null || endTime == null) {
+        startTime = null;
+        endTime = null;
+      }
+    }
+
     return EnforcerRestriction(
-      startTime: sampleRestriction.startTime,
-      endTime: sampleRestriction.endTime,
-      allowedWeekdays: sampleRestriction.allowedWeekdays,
+      startTime: startTime,
+      endTime: endTime,
       area: EnforcementArea(
         name: location.name,
         latitude: location.latitude,
         longitude: location.longitude,
-        radiusMeters: defaultRadiusMeters,
+        radiusMeters: location.radiusMeters ?? defaultRadiusMeters,
       ),
     );
   }

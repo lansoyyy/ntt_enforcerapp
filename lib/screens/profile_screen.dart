@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:enforcer_app/network/endpoints.dart';
 import 'package:enforcer_app/screens/home_screen.dart';
+import 'package:enforcer_app/services/restriction_service.dart';
 import 'package:enforcer_app/widgets/button_widget.dart';
 import 'package:enforcer_app/widgets/text_widget.dart';
 import 'package:enforcer_app/widgets/textfield_widget.dart';
@@ -275,7 +276,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+      final data =
+          decoded is Map && decoded['user'] is Map ? decoded['user'] : decoded;
       print('User data retrieved successfully: $data');
 
       box.write('id', data['id']);
@@ -287,6 +290,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } else {
         box.remove('location_id');
       }
+      if (data['location'] is Map) {
+        box.write('user_location', jsonEncode(data['location']));
+      } else {
+        box.remove('user_location');
+      }
+      if (data['schedule'] is Map) {
+        box.write('user_schedule', jsonEncode(data['schedule']));
+      } else {
+        box.remove('user_schedule');
+      }
+      RestrictionService.clearCache();
 
       setState(() {
         enforcerData = data;

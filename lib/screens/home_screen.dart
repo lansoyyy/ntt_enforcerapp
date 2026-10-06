@@ -76,7 +76,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+      final data =
+          decoded is Map && decoded['user'] is Map ? decoded['user'] : decoded;
       print('User data retrieved successfully: $data');
 
       box.write('id', data['id']);
@@ -88,6 +90,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       } else {
         box.remove('location_id');
       }
+      if (data['location'] is Map) {
+        box.write('user_location', jsonEncode(data['location']));
+      } else {
+        box.remove('user_location');
+      }
+      if (data['schedule'] is Map) {
+        box.write('user_schedule', jsonEncode(data['schedule']));
+      } else {
+        box.remove('user_schedule');
+      }
+      RestrictionService.clearCache();
 
       setState(() {
         enforcerData = data;

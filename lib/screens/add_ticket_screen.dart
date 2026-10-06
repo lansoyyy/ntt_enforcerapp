@@ -240,8 +240,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 Expanded(
                                   child: Text(
                                     'Enforcement hours: '
-                                    '${_restriction.scheduleLabel} '
-                                    '(${_restriction.weekdayLabel})',
+                                    '${_restriction.scheduleLabel}',
                                     style: const TextStyle(
                                       fontFamily: 'QRegular',
                                       fontSize: 12,
