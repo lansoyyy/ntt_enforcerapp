@@ -171,6 +171,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _refreshRestrictionStatus({bool requestPermission = false}) async {
     if (_checkingRestriction) return;
 
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    if (lifecycleState != null &&
+        lifecycleState != AppLifecycleState.resumed) {
+      return;
+    }
+
     setState(() {
       _checkingRestriction = true;
     });

@@ -65,6 +65,9 @@ class BiometricService {
         options: const AuthenticationOptions(
           biometricOnly: true,
           stickyAuth: true,
+          // Let errors surface as exceptions so the app can decide what to do
+          // instead of the plugin showing its own "go to settings" dialogs.
+          useErrorDialogs: false,
         ),
         authMessages: const [
           AndroidAuthMessages(

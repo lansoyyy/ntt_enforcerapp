@@ -33,6 +33,9 @@ logout(BuildContext context, Widget navigationRoute) {
                   box.remove('location');
                   box.remove('lgu_id');
                   box.remove('location_id');
+                  box.remove('user_location');
+                  box.remove('user_schedule');
+                  box.remove('assigned_area');
                   RestrictionService.clearCache();
 
                   Navigator.of(context).pushAndRemoveUntil(
