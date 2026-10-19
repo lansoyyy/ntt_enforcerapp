@@ -120,6 +120,21 @@ void main() {
       expect(status.isAvailable, isTrue);
       expect(status.hasFace, isTrue);
     });
+
+    test('trusts enrolled biometrics when canCheckBiometrics is wrong',
+        () async {
+      final service = BiometricService(
+        localAuthentication: _FakeLocalAuthentication(
+          canCheck: false,
+          biometrics: const <BiometricType>[BiometricType.weak],
+        ),
+      );
+
+      final status = await service.getStatus();
+
+      expect(status.support, BiometricSupport.available);
+      expect(status.isAvailable, isTrue);
+    });
   });
 
   group('BiometricService.authenticate', () {

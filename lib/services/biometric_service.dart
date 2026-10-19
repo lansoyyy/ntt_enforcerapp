@@ -40,17 +40,23 @@ class BiometricService {
         return const BiometricStatus(BiometricSupport.unsupported);
       }
 
-      final canCheckBiometrics = await _localAuthentication.canCheckBiometrics;
-      if (!canCheckBiometrics) {
-        return const BiometricStatus(BiometricSupport.unsupported);
-      }
-
+      // Enrolled biometrics are the source of truth: some OEMs incorrectly
+      // report `canCheckBiometrics` as false even when face/fingerprint is
+      // enrolled and usable.
       final biometrics = await _localAuthentication.getAvailableBiometrics();
-      if (biometrics.isEmpty) {
-        return const BiometricStatus(BiometricSupport.notEnrolled);
+      if (biometrics.isNotEmpty) {
+        return BiometricStatus(
+          BiometricSupport.available,
+          biometrics: biometrics,
+        );
       }
 
-      return BiometricStatus(BiometricSupport.available, biometrics: biometrics);
+      final canCheckBiometrics = await _localAuthentication.canCheckBiometrics;
+      return BiometricStatus(
+        canCheckBiometrics
+            ? BiometricSupport.notEnrolled
+            : BiometricSupport.unsupported,
+      );
     } on MissingPluginException {
       return const BiometricStatus(BiometricSupport.unsupported);
     } on PlatformException {

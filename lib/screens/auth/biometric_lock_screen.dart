@@ -8,14 +8,18 @@ class BiometricLockScreen extends StatefulWidget {
   const BiometricLockScreen({
     super.key,
     this.asOverlay = false,
+    this.unlockedDestination,
     this.biometricService,
     this.onVisibilityChanged,
   });
 
   /// When true the screen was pushed on top of an existing session and pops
   /// itself on success. When false it is the initial screen and replaces
-  /// itself with the home screen on success.
+  /// itself with [unlockedDestination] (home by default).
   final bool asOverlay;
+
+  /// Screen shown after a successful authentication when [asOverlay] is false.
+  final Widget? unlockedDestination;
 
   final BiometricService? biometricService;
 
@@ -101,8 +105,10 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
       return;
     }
 
+    final destination = widget.unlockedDestination ?? const HomeScreen();
+
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => destination),
       (route) {
         return false;
       },

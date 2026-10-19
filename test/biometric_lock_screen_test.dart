@@ -120,4 +120,25 @@ void main() {
     expect(visibility.first, isTrue);
     expect(visibility.last, isFalse);
   });
+
+  testWidgets('navigates to the unlocked destination on initial launch',
+      (tester) async {
+    final service = _FakeBiometricService([BiometricAuthResult.success]);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BiometricLockScreen(
+          biometricService: service,
+          unlockedDestination: const Scaffold(
+            body: Center(child: Text('LOGIN SCREEN')),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('App Locked'), findsNothing);
+    expect(find.text('LOGIN SCREEN'), findsOneWidget);
+  });
 }

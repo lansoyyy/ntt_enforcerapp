@@ -1,5 +1,6 @@
 import 'package:enforcer_app/screens/auth/biometric_lock_screen.dart';
 import 'package:enforcer_app/screens/auth/login_screen.dart';
+import 'package:enforcer_app/screens/home_screen.dart';
 import 'package:enforcer_app/services/app_lock_controller.dart';
 import 'package:enforcer_app/services/biometric_service.dart';
 import 'package:flutter/material.dart';
@@ -27,16 +28,18 @@ class _AppStartupGateState extends State<AppStartupGate> {
   }
 
   Future<void> _resolveDestination() async {
+    final token = GetStorage().read('token');
+    final hasSession = token != null && token.toString().isNotEmpty;
+
     Widget destination = const LoginScreen();
 
-    final token = GetStorage().read('token');
-    if (token != null && token.toString().isNotEmpty) {
-      final status = await _biometricService.getStatus();
-      if (status.isAvailable) {
-        destination = BiometricLockScreen(
-          onVisibilityChanged: AppLockController.instance.setLockVisibility,
-        );
-      }
+    final status = await _biometricService.getStatus();
+    if (status.isAvailable) {
+      destination = BiometricLockScreen(
+        unlockedDestination:
+            hasSession ? const HomeScreen() : const LoginScreen(),
+        onVisibilityChanged: AppLockController.instance.setLockVisibility,
+      );
     }
 
     if (!mounted) return;
