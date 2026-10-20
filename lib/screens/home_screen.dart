@@ -1044,6 +1044,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           printer.printReceipt(
                               license.text,
                               address.text,
+                              (data['place_of_apprehension'] ??
+                                      data['location'] ??
+                                      place.text)
+                                  .toString(),
                               '${fname.text} ${lname.text}',
                               plateno.text,
                               vehicletype.text,

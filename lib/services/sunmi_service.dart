@@ -83,6 +83,7 @@ class SunmiService {
   Future<void> printReceipt(
       String license,
       String address,
+      String placeOfApprehension,
       String name,
       String plateno,
       String vehicle,
@@ -116,6 +117,10 @@ class SunmiService {
     await printRowAndColumns(
       column1: "Address:",
       column2: address,
+    );
+    await printRowAndColumns(
+      column1: "Place of Apprehension:",
+      column2: placeOfApprehension,
     );
     await printRowAndColumns(
       column1: "Plate Number:",

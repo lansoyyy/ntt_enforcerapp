@@ -122,6 +122,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     super.initState();
 
+    place.text = _restriction.area.name;
+
     getViolations();
 
     _loadRestriction();
@@ -132,6 +134,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     if (!mounted) return;
     setState(() {
       _restriction = restriction;
+      place.text = restriction.area.name;
     });
   }
 
@@ -400,6 +403,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         width: double.infinity,
                         controller: place,
                         label: 'Place of Apprehension',
+                        hint: 'Assigned location',
+                        enabled: false,
                       ),
                       Divider(
                         color: Colors.grey[200],
@@ -877,6 +882,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 "enforcer_id": box.read('id'),
                                 "enforcer_name": "${box.read('name')}",
                                 "location": place.text,
+                                "location_id": box.read('location_id'),
                                 "date_issued": DateFormat('yyyy-MM-ddTHH:mm')
                                     .format(DateTime.now()),
                                 "status": "UNPAID",
@@ -1045,6 +1051,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       printer.printReceipt(
                           license.text,
                           address.text,
+                          place.text,
                           '${fname.text} ${lname.text}',
                           plateno.text,
                           vehicletype.text,
